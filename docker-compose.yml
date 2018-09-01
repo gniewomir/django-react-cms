@@ -1,0 +1,94 @@
+version: "3"
+
+services:
+
+  nginx:
+    restart: always
+    build: ./services/nginx/
+    ports:
+    - "80:80"
+    volumes:
+    - static:/var/www/static:ro
+    depends_on:
+    - cms
+    - accounts
+    networks:
+    - frontend
+    - backend
+
+  accounts:
+    restart: always
+    build:
+      context: ./services/accounts
+      args:
+        unbuffered: 1
+        uncached: 1
+        environment: "local"
+    expose:
+    - "8000"
+    volumes:
+    - /home/django/app
+    - static:/home/django/app/static
+    env_file: .env
+    depends_on:
+    - accounts-postgres
+    - redis
+    networks:
+    - backend
+
+  accounts-postgres:
+    image: postgres:10
+    container_name: accounts-postgres
+    volumes:
+    - "accounts-postgres:/var/lib/postgresql/data"
+    networks:
+    - backend
+
+  cms:
+    restart: always
+    build:
+      context: ./services/cms
+      args:
+        unbuffered: 1
+        uncached: 1
+        environment: "local"
+    expose:
+    - "8000"
+    volumes:
+    - /home/django/app
+    - static:/home/django/app/static
+    env_file: .env
+    depends_on:
+    - cms-postgres
+    - redis
+    networks:
+    - backend
+
+  cms-postgres:
+    image: postgres:10
+    container_name: cms-postgres
+    volumes:
+    - "cms-postgres:/var/lib/postgresql/data"
+    networks:
+    - backend
+
+
+  redis:
+    restart: always
+    image: redis:latest
+    ports:
+    - "6379"
+    volumes:
+    - redis:/data
+    networks:
+    - backend
+
+volumes:
+  static:
+  cms-postgres:
+  accounts-postgres:
+  redis:
+
+networks:
+  frontend:
+  backend:
