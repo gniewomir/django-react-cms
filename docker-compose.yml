@@ -21,9 +21,7 @@ services:
     build:
       context: ./services/accounts
       args:
-        unbuffered: 1
-        uncached: 1
-        environment: "local"
+        environment: $ENVIRONMENT
     expose:
     - "8000"
     volumes:
@@ -49,9 +47,7 @@ services:
     build:
       context: ./services/cms
       args:
-        unbuffered: 1
-        uncached: 1
-        environment: "local"
+        environment: $ENVIRONMENT
     expose:
     - "8000"
     volumes:

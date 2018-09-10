@@ -1,12 +1,9 @@
 FROM python:3.6.5-stretch
-ARG unbuffered
-ARG uncached
 ARG environment
-ENV PATH /root/.local/bin:$PATH
-ENV PYTHONUNBUFFERED=$unbuffered
-ENV PYTHONDONTWRITEBYTECODE=$uncached
-ENV DEBUG=true
 ENV ENVIRONMENT=$environment
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PATH /root/.local/bin:$PATH
 WORKDIR /home/django/app
 COPY . /home/django/app
 RUN pip install --upgrade pip \
