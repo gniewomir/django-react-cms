@@ -27,7 +27,7 @@ class RouteView(ModelViewSet):
             site = Site.objects.get(domain=kwargs['domain'])
         except Site.DoesNotExist:
             raise NotFound(detail='Unknown site domain.')
-        routes = Route.objects.filter(site=site)
+        routes = self.get_queryset().filter(site=site)
         if not routes.count():
             raise NotFound(detail='Site do not have any routes.')
         for single_route in routes:
