@@ -60,11 +60,34 @@ class UserEndpointsForAuthenticatedUserTest(AccountsTestBase):
                          self.client.patch(reverse('user-single', args=(self.get_tested_user().id,)),
                                            {'email': new_email, 'accepted_privacy_policy': new_accepted_privacy_policy},
                                            format='json').status_code)
+
+    def test_update_by_uuid_user_can_update_own_email_with_already_set_email(self):
+        user = self.get_tested_user()
+        user.email = 'test@email.com'
+        user.save()
+        user.refresh_from_db()
+        self.authenticate_tested_user()
+        self.assertEqual(status.HTTP_200_OK,
+                         self.client.patch(reverse('user-single', args=(self.get_tested_user().id,)),
+                                           {'email': user.email, 'accepted_privacy_policy': True},
+                                           format='json').status_code)
+
+    def test_update_by_uuid_user_returns_updated_email_and_privacy_policy(self):
+        new_email = 'new@email.com'
+        new_accepted_privacy_policy = True
+        self.authenticate_tested_user()
         response = self.client.patch(reverse('user-single', args=(self.get_tested_user().id,)),
-                                     {'email': new_email},
+                                     {'email': new_email, 'accepted_privacy_policy': new_accepted_privacy_policy},
                                      format='json')
         self.assertEqual(new_email, response.data['email'])
         self.assertEqual(new_accepted_privacy_policy, response.data['accepted_privacy_policy'])
+
+    def test_update_by_uuid_rejects_duplicated_emails(self):
+        self.authenticate_tested_user()
+        self.assertEqual(status.HTTP_400_BAD_REQUEST,
+                         self.client.patch(reverse('user-single', args=(self.get_tested_user().id,)),
+                                           {'email': self.registered_user_email, 'accepted_privacy_policy': True},
+                                           format='json').status_code)
 
     def test_update_by_uuid_user_cannot_update_anything_but_email_and_privacy_policy(self):
         new_username = 'new-username'

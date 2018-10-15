@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, EmailField, BooleanField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, EmailField, BooleanField, ValidationError
 
 from .authorization import is_loggedin, is_authenticated
 from .models import User, IdentityToken, ElevatedToken
@@ -29,6 +29,13 @@ class UserSerializer(ModelSerializer):
             except ElevatedToken.DoesNotExist:
                 return None
         return None
+
+    def validate_email(self, value):
+        if value == self.context['user'].email:
+            return value
+        if User.objects.filter(email=value).exists():
+            raise ValidationError('Not unique email!')
+        return value
 
     class Meta:
         model = User

@@ -18,14 +18,15 @@ class UserView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_serializer(self, *args, **kwargs):
+    def get_serializer(self, user, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         kwargs['context'] = self.get_serializer_context()
         if 'elevated_token' in kwargs:
             kwargs['context']['elevated_token'] = kwargs.pop('elevated_token')
         if 'identity_token' in kwargs:
             kwargs['context']['identity_token'] = kwargs.pop('identity_token')
-        return serializer_class(*args, **kwargs)
+        kwargs['context']['user'] = user
+        return serializer_class(user, *args, **kwargs)
 
     def get_permissions(self):
         if self.action == 'create':
@@ -62,7 +63,7 @@ class UserView(ModelViewSet):
             if not user.is_registered:
                 raise PermissionDenied('Not registered!')
             if not has_login_permission(user):
-                raise PermissionDenied('Login denied!')
+                raise PermissionDenied('No login permission!')
             if not user.check_password(request.data.get('password')):
                 raise PermissionDenied('Invalid password!')
             user.date_login = timezone.now()
@@ -119,7 +120,7 @@ class UserView(ModelViewSet):
         if all([
             is_authenticated(instance),
             not is_loggedin(request.auth),
-            request.data.get('email', False) or request.data.get('accepted_privacy_policy', False)
+            request.data.get('email', False) or 'accepted_privacy_policy' in request.data
         ]):
             data = {'email': request.data.get('email', instance.email),
                     'accepted_privacy_policy': request.data.get('accepted_privacy_policy',
@@ -146,6 +147,7 @@ class UserView(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+
         # log out
         if all([
             is_authenticated(instance),
