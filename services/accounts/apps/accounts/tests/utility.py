@@ -16,6 +16,12 @@ class AccountsTestBase(APITestCase):
     def get_tested_user_password(self):
         return NotImplementedError()
 
+    def get_tested_user_identity_token_key(self):
+        return IdentityToken.objects.get(user=self.get_tested_user()).key
+
+    def get_tested_user_elevated_token_key(self):
+        return ElevatedToken.objects.get(user=self.get_tested_user()).key
+
     def authenticate_tested_user(self):
         self.authenticate_user(self.get_tested_user())
 

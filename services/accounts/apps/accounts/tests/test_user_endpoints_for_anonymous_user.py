@@ -121,13 +121,33 @@ class UserEndpointsForAnonymousUserTest(AccountsTestBase):
 
     def test_retrieve_by_uuid_is_forbidden_for_anonymous_user(self):
         self.assertEqual(status.HTTP_401_UNAUTHORIZED,
-                         self.client.get(reverse('user-single', args=(self.get_tested_user().id,)),
+                         self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
                                          format='json').status_code)
+
+    def test_retrieve_by_token_is_forbidden_for_anonymous_user(self):
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED,
+                         self.client.get(
+                             reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
+                             format='json').status_code)
 
     # update
 
     def test_update_by_uuid_is_forbidden_for_anonymous_user(self):
         self.assertEqual(status.HTTP_401_UNAUTHORIZED,
-                         self.client.patch(reverse('user-single', args=(self.get_tested_user().id,)),
+                         self.client.patch(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
                                            {'email': 'new@email.com'},
                                            format='json').status_code)
+
+    def test_update_by_token_is_forbidden_for_anonymous_user(self):
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED,
+                         self.client.patch(
+                             reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
+                             {'email': 'new@email.com'},
+                             format='json').status_code)
+
+    def test_update_by_token_is_forbidden_for_anonymous_user_tmp(self):
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED,
+                         self.client.patch(
+                             reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
+                             {'email': 'new@email.com'},
+                             format='json').status_code)

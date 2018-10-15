@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.db import transaction
+from django.http import Http404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
@@ -162,3 +163,27 @@ class UserView(ModelViewSet):
             return Response(serializer.data)
 
         raise PermissionDenied()
+
+
+class UserByTokenView(UserView):
+    lookup_field = None
+    lookup_url_kwarg = 'token'
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        assert lookup_url_kwarg in self.kwargs, (
+                'Expected view %s to be called with a URL keyword argument '
+                'named "%s". Fix your URL conf, or set the `.lookup_field` '
+                'attribute on the view correctly.' %
+                (self.__class__.__name__, lookup_url_kwarg)
+        )
+        try:
+            user = ElevatedToken.objects.select_related('user').get(key=self.kwargs[lookup_url_kwarg]).user
+        except ElevatedToken.DoesNotExist:
+            try:
+                user = IdentityToken.objects.select_related('user').get(key=self.kwargs[lookup_url_kwarg]).user
+            except ElevatedToken.DoesNotExist:
+                raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
+        self.check_object_permissions(self.request, user)
+        return user
