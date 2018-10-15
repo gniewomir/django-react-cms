@@ -10,6 +10,7 @@ class UserSerializer(ModelSerializer):
     identity_token = SerializerMethodField(read_only=True)
     elevated_token = SerializerMethodField(read_only=True)
     user_permissions = SerializerMethodField(read_only=True)
+    service_permissions = SerializerMethodField(read_only=True)
     accepted_terms_of_service = BooleanField()
     accepted_privacy_policy = BooleanField()
     is_registered = BooleanField()
@@ -45,6 +46,10 @@ class UserSerializer(ModelSerializer):
         return get_unique_permissions_list(
             instance.user_permissions.all() | Permission.objects.filter(group__user=instance))
 
+    @staticmethod
+    def get_service_permissions(instance):
+        return [str(perm) for perm in instance.service_permissions.all()]
+
     def validate_email(self, value):
         if value == self.context['user'].email:
             return value
@@ -56,6 +61,8 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name', 'identity_token', 'elevated_token',
-            'user_permissions',
-            'is_registered', 'accepted_privacy_policy', 'accepted_terms_of_service')
-        read_only_fields = ('id', 'identity_token', 'elevated_token', 'is_registered', 'user_permissions')
+            'user_permissions', 'service_permissions', 'is_registered', 'accepted_privacy_policy',
+            'accepted_terms_of_service')
+        read_only_fields = (
+            'id', 'identity_token', 'elevated_token', 'is_registered', 'user_permissions',
+            'service_permissions')

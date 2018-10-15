@@ -7,6 +7,7 @@ from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from ..models import IdentityToken, ElevatedToken, User
+from ...services.models import Service, ServicePermission
 
 
 class AccountsTestBase(APITestCase):
@@ -36,7 +37,8 @@ class AccountsTestBase(APITestCase):
         token, created = ElevatedToken.objects.get_or_create(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
-    def generate_random_string(self):
+    @staticmethod
+    def generate_random_string():
         return binascii.hexlify(os.urandom(20)).decode()[:20]
 
     def setUp(self):
@@ -121,3 +123,11 @@ class AccountsTestBase(APITestCase):
         user.date_login = timezone.now()
         user.save()
         return user
+
+    @staticmethod
+    def assign_and_return_service_permission_for_user(user, service_name='cms',
+                                                      service_permission='view_public_content'):
+        service, created = Service.objects.get_or_create(name=service_name)
+        permission, created = ServicePermission.objects.get_or_create(name=service_permission, service=service)
+        user.service_permissions.add(permission)
+        return permission

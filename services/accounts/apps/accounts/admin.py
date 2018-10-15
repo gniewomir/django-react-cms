@@ -1,8 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Permission
+from django.utils.translation import gettext_lazy as _
 
 from .models import User, ElevatedToken, IdentityToken
+
+
+class AccountsUserAdmin(UserAdmin):
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_registered', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions', 'user_service_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
+    filter_horizontal = ('groups', 'user_permissions', 'service_permissions')
 
 
 class IdentityTokenAdmin(admin.ModelAdmin):
@@ -20,4 +32,4 @@ class ElevatedTokenAdmin(admin.ModelAdmin):
 admin.site.register(ElevatedToken, ElevatedTokenAdmin)
 admin.site.register(IdentityToken, IdentityTokenAdmin)
 admin.site.register(Permission)
-admin.site.register(User, UserAdmin)
+admin.site.register(User, AccountsUserAdmin)
