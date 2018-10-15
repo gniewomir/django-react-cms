@@ -24,7 +24,10 @@ class UserSerializer(ModelSerializer):
         if 'elevated_token' in self.context:
             return self.context['elevated_token'].key
         if is_loggedin(self.context['request'].auth):
-            return ElevatedToken.objects.get(user=instance).key
+            try:
+                return ElevatedToken.objects.get(user=instance).key
+            except ElevatedToken.DoesNotExist:
+                return None
         return None
 
     class Meta:

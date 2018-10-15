@@ -15,7 +15,9 @@ Todo
 
 * [x] Setup token authentication with login and registration
 * [x] Introduce ownership permissions
-* [ ] Setup JWT authentication for other services 
+* [x] Add logging out
+* [ ] Setup JWT authentication
+* [ ] Setup token expiration
 * [ ] Choose and configure password hashing
 * [ ] Gather user unique user-agent's
 * [ ] Block anonymous user creation for bots

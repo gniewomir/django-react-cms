@@ -34,6 +34,8 @@ class UserView(ModelViewSet):
             return [IsAuthenticated(), IsOwner()]
         if self.action == 'update':
             return [IsAuthenticated(), IsOwner()]
+        if self.action == 'destroy':
+            return [IsAuthenticated(), IsOwner()]
         raise PermissionDenied('Unsupported action!')
 
     @transaction.atomic
@@ -68,7 +70,7 @@ class UserView(ModelViewSet):
             serializer = self.get_serializer(user, data={}, partial=True, elevated_token=elevated_token)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         # create new user otherwise
         user = User.objects.create(username='authenticated_{}'.format(uuid4()))
@@ -136,6 +138,23 @@ class UserView(ModelViewSet):
             is_loggedin(request.auth)
         ]):
             serializer = self.get_serializer(instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+
+        raise PermissionDenied()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # log out
+        if all([
+            is_authenticated(instance),
+            is_registered(instance),
+            is_loggedin(request.auth)
+        ]):
+            token = ElevatedToken.objects.get(user=instance)
+            token.delete()
+            serializer = self.get_serializer(instance, data={}, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)

@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from .utility import AccountsTestBase
+from ..models import ElevatedToken
 
 """
 Registered user provided identity_token 
@@ -13,6 +14,7 @@ Registered user cannot "retrieve" other user
 Registered user cannot "retrieve" other user if logged in
 Registered user cannot "update" itself if not logged in
 Registered user can "update" itself if logged in
+Registered user if logged in can "destroy" itself to logout
 """
 
 
@@ -72,3 +74,11 @@ class UserTest(AccountsTestBase):
                          self.client.patch(reverse('user-single', args=(self.get_tested_user().id,)),
                                            {'email': new_email},
                                            format='json').status_code)
+
+    # destroy
+
+    def test_destroy_by_uuid_logs_user_out(self):
+        self.login_and_authenticate_tested_user()
+        self.assertEqual(1, ElevatedToken.objects.filter(user=self.get_tested_user()).count())
+        self.client.delete(reverse('user-single', args=(self.get_tested_user().id,)), format='json')
+        self.assertEqual(0, ElevatedToken.objects.filter(user=self.get_tested_user()).count())
