@@ -141,3 +141,11 @@ class UserTest(AccountsTestBase):
         self.client.delete(reverse('user-single-by-token', args=(self.get_tested_user_elevated_token_key(),)),
                            format='json')
         self.assertEqual(0, ElevatedToken.objects.filter(user=self.get_tested_user()).count())
+
+
+    # tmp
+
+    def test_retrieve_by_uuid_tmp(self):
+        self.login_and_authenticate_tested_user()
+        print(self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
+                        format='json').data['user_permissions'])
