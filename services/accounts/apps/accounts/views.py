@@ -19,15 +19,16 @@ class UserView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_serializer(self, user, *args, **kwargs):
+    def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         kwargs['context'] = self.get_serializer_context()
         if 'elevated_token' in kwargs:
             kwargs['context']['elevated_token'] = kwargs.pop('elevated_token')
         if 'identity_token' in kwargs:
             kwargs['context']['identity_token'] = kwargs.pop('identity_token')
-        kwargs['context']['user'] = user
-        return serializer_class(user, *args, **kwargs)
+        if self.request:
+            kwargs['context']['user'] = self.request.user
+        return serializer_class(*args, **kwargs)
 
     def get_permissions(self):
         if self.action == 'create':
@@ -183,7 +184,7 @@ class UserByTokenView(UserView):
         except ElevatedToken.DoesNotExist:
             try:
                 user = IdentityToken.objects.select_related('user').get(key=self.kwargs[lookup_url_kwarg]).user
-            except ElevatedToken.DoesNotExist:
+            except IdentityToken.DoesNotExist:
                 raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
         self.check_object_permissions(self.request, user)
         return user

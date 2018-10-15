@@ -22,6 +22,11 @@ Todo
 * [ ] Choose and configure password hashing
 * [ ] Gather user unique user-agent's
 * [ ] Setup blocking user creation for bots
+* [ ] Document accounts app endpoints 
 * [ ] Create mailing service  
 
 
+Todo - Bugs
+-
+* [x] Docs and schema are failing because redefined get_serializer in user view in accounts app
+* [x] `user-single-by-token` endpoint should return 404 when token was not recognized
