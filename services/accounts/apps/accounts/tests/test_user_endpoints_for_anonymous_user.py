@@ -4,14 +4,6 @@ from rest_framework import status
 from .utility import AccountsTestBase
 from ..models import User
 
-"""
-Anonymous user haven't provided identity_token
-
-Anonymous user can "create" user, to receive identity_token, allowing to become authenticated later
-Anonymous user can "login" itself, to receive identity_token and elevated_token, allowing him to become authenticated or logged in later
-Anonymous user cannot perform any other action
-"""
-
 
 class UserEndpointsForAnonymousUserTest(AccountsTestBase):
 

@@ -9,8 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .authorization import IsOwner, add_login_permission, able_to_login, is_loggedin, \
-    is_registered
+from .authorization import IsOwner, is_loggedin, is_registered
 from .models import User, ElevatedToken, IdentityToken
 from .serializers import AuthenticatedUserSerializer, AuthorizedUserSerializer
 
@@ -61,8 +60,6 @@ class UserView(ModelViewSet):
                     raise PermissionDenied('Multiple emails found!')
             if not user.is_registered:
                 raise PermissionDenied('Not registered!')
-            if not able_to_login(request):
-                raise PermissionDenied('No login permission!')
             if not user.check_password(request.data.get('password')):
                 raise PermissionDenied('Invalid password!')
             user.date_login = timezone.now()
@@ -95,7 +92,6 @@ class UserView(ModelViewSet):
                 instance.date_registered = timezone.now()
             instance.is_registered = True
             instance.set_password(request.data.get('password'))
-            add_login_permission(instance)
             serializer = self.get_serializer(instance, data={
                 'username': request.data.get('username', instance.username),
                 'email': request.data.get('email', instance.email),

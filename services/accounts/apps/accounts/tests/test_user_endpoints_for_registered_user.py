@@ -4,19 +4,6 @@ from rest_framework import status
 from .utility import AccountsTestBase
 from ..models import ElevatedToken, IdentityToken
 
-"""
-Registered user provided identity_token 
-
-Registered user can do everything what anonymous user can
-Registered user cannot "retrieve" itself if not logged in
-Registered user can "retrieve" itself if logged in
-Registered user cannot "retrieve" other user
-Registered user cannot "retrieve" other user if logged in
-Registered user cannot "update" itself if not logged in
-Registered user can "update" itself if logged in
-Registered user if logged in can "destroy" itself to logout
-"""
-
 
 class UserTest(AccountsTestBase):
 

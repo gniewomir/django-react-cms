@@ -4,18 +4,6 @@ from rest_framework import status
 from .utility import AccountsTestBase
 from ..models import ElevatedToken
 
-"""
-Authenticated user provided identity_token 
-
-Authenticated user can do everything what anonymous user can
-Authenticated user can "retrieve" itself
-Authenticated user cannot "retrieve" other user
-Authenticated user can "update" field "email"
-Authenticated user can "update" field "accepted_privacy_policy"
-Authenticated user cannot "update" other user
-Authenticated user can "register" itself if he will provide all required data with update request
-"""
-
 
 class UserEndpointsForAuthenticatedUserTest(AccountsTestBase):
 
@@ -148,16 +136,6 @@ class UserEndpointsForAuthenticatedUserTest(AccountsTestBase):
                                                 'accepted_terms_of_service': True},
                                           format='json').data['is_registered'])
 
-    def test_update_by_uuid_with_values_required_by_registration_adds_login_permission(self):
-        self.authenticate_tested_user()
-        self.client.patch(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-                          data={'username': 'test', 'email': 'test@test.net',
-                                'password': 'password', 'accepted_privacy_policy': True,
-                                'accepted_terms_of_service': True},
-                          format='json')
-        self.get_tested_user().refresh_from_db()
-        self.assertTrue(self.get_tested_user().has_perm('accounts.login'))
-
     # update/register by token
 
     def test_update_by_token_with_values_required_by_registration_sets_registered_flag(self):
@@ -168,13 +146,3 @@ class UserEndpointsForAuthenticatedUserTest(AccountsTestBase):
                                     'password': 'password', 'accepted_privacy_policy': True,
                                     'accepted_terms_of_service': True},
                               format='json').data['is_registered'])
-
-    def test_update_by_token_with_values_required_by_registration_adds_login_permission(self):
-        self.authenticate_tested_user()
-        self.client.patch(reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
-                          data={'username': 'test', 'email': 'test@test.net',
-                                'password': 'password', 'accepted_privacy_policy': True,
-                                'accepted_terms_of_service': True},
-                          format='json')
-        self.get_tested_user().refresh_from_db()
-        self.assertTrue(self.get_tested_user().has_perm('accounts.login'))

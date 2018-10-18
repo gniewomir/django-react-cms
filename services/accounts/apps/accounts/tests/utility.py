@@ -1,14 +1,12 @@
 import binascii
 import os
 
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from rest_framework.test import APITestCase
+from rest_framework_jwt.settings import api_settings
 
 from ..models import IdentityToken, ElevatedToken, User
 from ...services.models import Service, ServicePermission
-from rest_framework_jwt.settings import api_settings
 
 
 class AccountsTestBase(APITestCase):
@@ -108,14 +106,6 @@ class AccountsTestBase(APITestCase):
         return User.objects.create(username='test_anonymous_{}'.format(self.generate_random_string()))
 
     def _get_new_registered_user(self, email, password, first_name, last_name):
-        # create login permission
-        content_type = ContentType.objects.get_for_model(User)
-        permission, created = Permission.objects.get_or_create(
-            codename='login',
-            name='Can login',
-            content_type=content_type,
-        )
-
         # register user
         user = self._get_new_authenticated_user()
         user.username = '{}{}{}'.format(first_name, last_name, self.generate_random_string())
@@ -127,7 +117,6 @@ class AccountsTestBase(APITestCase):
         user.is_registered = True
         user.date_registered = timezone.now()
         user.set_password(password)
-        user.user_permissions.add(permission)
         user.save()
         return user
 
