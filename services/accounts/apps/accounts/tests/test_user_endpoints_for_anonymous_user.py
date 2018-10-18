@@ -40,9 +40,6 @@ class UserEndpointsForAnonymousUserTest(AccountsTestBase):
     def test_create_user_user_is_not_registered_after_creation(self):
         self.assertFalse(self.client.post(reverse('users'), format='json').data['is_registered'])
 
-    def test_create_username_is_not_empty(self):
-        self.assertTrue(bool(self.client.post(reverse('users'), format='json').data['username']))
-
     # create/login
 
     def test_login_with_email_is_allowed_without_authentication(self):

@@ -1,6 +1,12 @@
 from rest_framework.authentication import TokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from .models import ElevatedToken, IdentityToken
+
+
+class JWTAuthentication(JSONWebTokenAuthentication):
+    def authenticate_credentials(self, payload):
+        return super().authenticate_credentials(payload), payload
 
 
 class ElevatedTokenAuthentication(TokenAuthentication):

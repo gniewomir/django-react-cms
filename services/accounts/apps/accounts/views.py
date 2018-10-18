@@ -5,40 +5,37 @@ from django.http import Http404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .authorization import IsOwner, add_login_permission, has_login_permission, is_authenticated, is_loggedin, \
+from .authorization import IsOwner, add_login_permission, able_to_login, is_loggedin, \
     is_registered
 from .models import User, ElevatedToken, IdentityToken
-from .serializers import UserSerializer
+from .serializers import AuthenticatedUserSerializer, AuthorizedUserSerializer
 
 
 class UserView(ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
 
     def get_serializer(self, *args, **kwargs):
-        serializer_class = self.get_serializer_class()
+        serializer_class = AuthorizedUserSerializer if is_loggedin(self.request) else AuthenticatedUserSerializer
         kwargs['context'] = self.get_serializer_context()
         if 'elevated_token' in kwargs:
             kwargs['context']['elevated_token'] = kwargs.pop('elevated_token')
         if 'identity_token' in kwargs:
             kwargs['context']['identity_token'] = kwargs.pop('identity_token')
-        if self.request:
-            kwargs['context']['user'] = self.request.user
         return serializer_class(*args, **kwargs)
 
     def get_permissions(self):
         if self.action == 'create':
             return [AllowAny()]
         if self.action == 'retrieve':
-            return [IsAuthenticated(), IsOwner()]
+            return [IsOwner()]
         if self.action == 'update':
-            return [IsAuthenticated(), IsOwner()]
+            return [IsOwner()]
         if self.action == 'destroy':
-            return [IsAuthenticated(), IsOwner()]
+            return [IsOwner()]
         raise PermissionDenied('Unsupported action!')
 
     @transaction.atomic
@@ -64,7 +61,7 @@ class UserView(ModelViewSet):
                     raise PermissionDenied('Multiple emails found!')
             if not user.is_registered:
                 raise PermissionDenied('Not registered!')
-            if not has_login_permission(user):
+            if not able_to_login(request):
                 raise PermissionDenied('No login permission!')
             if not user.check_password(request.data.get('password')):
                 raise PermissionDenied('Invalid password!')
@@ -76,14 +73,10 @@ class UserView(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         # create new user otherwise
-        user = User.objects.create(username='authenticated_{}'.format(uuid4()))
-        identity_token, created = IdentityToken.objects.get_or_create(user=user)
-        serializer = self.get_serializer(user,
-                                         data={'username': 'authenticated_{}'.format(uuid4())}, partial=True,
-                                         identity_token=identity_token)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = User.objects.create(username='user_{}'.format(uuid4()))
+        return Response(
+            self.get_serializer(user, identity_token=IdentityToken.objects.get_or_create(user=user)[0]).data,
+            status=status.HTTP_201_CREATED)
 
     @transaction.atomic
     def update(self, request, *args, **kwargs):
@@ -91,55 +84,45 @@ class UserView(ModelViewSet):
 
         # register user if possible
         if all([
-            is_authenticated(instance),
-            not is_registered(instance),
-            not has_login_permission(instance),
+            not is_registered(request),
             request.data.get('username', False),
             request.data.get('email', False),
             request.data.get('password', False),
             request.data.get('accepted_privacy_policy', False),
             request.data.get('accepted_terms_of_service', False),
         ]):
-            data = {
+            if not instance.date_registered:
+                instance.date_registered = timezone.now()
+            instance.is_registered = True
+            instance.set_password(request.data.get('password'))
+            add_login_permission(instance)
+            serializer = self.get_serializer(instance, data={
                 'username': request.data.get('username', instance.username),
                 'email': request.data.get('email', instance.email),
                 'accepted_privacy_policy': request.data.get('accepted_privacy_policy',
                                                             instance.accepted_privacy_policy),
                 'accepted_terms_of_service': request.data.get('accepted_terms_of_service',
                                                               instance.accepted_terms_of_service),
-            }
-            if not instance.date_registered:
-                instance.date_registered = timezone.now()
-            instance.is_registered = True
-            instance.set_password(request.data.get('password'))
-            add_login_permission(instance)
-            serializer = self.get_serializer(instance, data=data, partial=True)
+            }, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
 
-        # allow email and privacy_policy update if authenticated but not logged in
+        # allow `accepted privacy_policy` field update if authenticated but not logged in and not accepted before
         if all([
-            is_authenticated(instance),
-            not is_loggedin(request.auth),
-            request.data.get('email', False) or 'accepted_privacy_policy' in request.data
+            not is_registered(request),
+            not instance.accepted_privacy_policy,
+            request.data.get('accepted_privacy_policy', False)
         ]):
-            data = {'email': request.data.get('email', instance.email),
-                    'accepted_privacy_policy': request.data.get('accepted_privacy_policy',
-                                                                instance.accepted_privacy_policy)}
             serializer = self.get_serializer(instance,
-                                             data=data,
+                                             data={'accepted_privacy_policy': True},
                                              partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
 
-        # allow update if registered and logged in
-        if all([
-            is_authenticated(instance),
-            is_registered(instance),
-            is_loggedin(request.auth)
-        ]):
+        # allow update if logged in
+        if is_loggedin(self.request):
             serializer = self.get_serializer(instance, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -151,11 +134,7 @@ class UserView(ModelViewSet):
         instance = self.get_object()
 
         # log out
-        if all([
-            is_authenticated(instance),
-            is_registered(instance),
-            is_loggedin(request.auth)
-        ]):
+        if is_loggedin(self.request):
             token = ElevatedToken.objects.get(user=instance)
             token.delete()
             serializer = self.get_serializer(instance, data={}, partial=True)

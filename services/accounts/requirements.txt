@@ -6,7 +6,7 @@ coverage==4.5.1
 Django==2.1.2
 django-filter==2.0.0
 djangorestframework==3.8.2
-djangorestframework-simplejwt==3.2.3
+djangorestframework-jwt==1.11.0
 gunicorn==19.8.1
 idna==2.7
 itypes==1.1.0

@@ -82,11 +82,16 @@ DATABASES = {
     }
 }
 
+JWT_AUTH = {
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer'
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'apps.accounts.authentication.JWTAuthentication',
         'apps.accounts.authentication.ElevatedTokenAuthentication',
         'apps.accounts.authentication.IdentityTokenAuthentication',
     )
@@ -95,7 +100,6 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'accounts.User'
 
 AUTHENTICATION_BACKENDS = [
-    'rest_framework_simplejwt.authentication.JWTAuthentication',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

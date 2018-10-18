@@ -8,6 +8,7 @@ from rest_framework.test import APITestCase
 
 from ..models import IdentityToken, ElevatedToken, User
 from ...services.models import Service, ServicePermission
+from rest_framework_jwt.settings import api_settings
 
 
 class AccountsTestBase(APITestCase):
@@ -26,16 +27,30 @@ class AccountsTestBase(APITestCase):
     def authenticate_tested_user(self):
         self.authenticate_user(self.get_tested_user())
 
+    def authenticate_tested_user_with_jwt(self):
+        self.authenticate_user_with_jwt(self.get_tested_user())
+
     def login_and_authenticate_tested_user(self):
         self.login_user(self.get_tested_user())
+
+    def login_and_authenticate_tested_user_with_jwt(self):
+        self.login_user_with_jwt(self.get_tested_user())
 
     def authenticate_user(self, user):
         token = IdentityToken.objects.select_related('user').get(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
+    def authenticate_user_with_jwt(self, user):
+        IdentityToken.objects.get(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self._get_jwt_token(user))
+
     def login_user(self, user):
         token, created = ElevatedToken.objects.get_or_create(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+    def login_user_with_jwt(self, user):
+        ElevatedToken.objects.get_or_create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self._get_jwt_token(user))
 
     @staticmethod
     def generate_random_string():
@@ -123,6 +138,12 @@ class AccountsTestBase(APITestCase):
         user.date_login = timezone.now()
         user.save()
         return user
+
+    @staticmethod
+    def _get_jwt_token(user):
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        return jwt_encode_handler(jwt_payload_handler(user))
 
     @staticmethod
     def assign_and_return_service_permission_for_user(user, service_name='cms',
