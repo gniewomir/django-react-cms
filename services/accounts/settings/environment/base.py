@@ -83,7 +83,8 @@ DATABASES = {
 }
 
 JWT_AUTH = {
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer'
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_PAYLOAD_HANDLER': 'apps.accounts.authentication.accounts_jwt_payload_handler'
 }
 
 REST_FRAMEWORK = {

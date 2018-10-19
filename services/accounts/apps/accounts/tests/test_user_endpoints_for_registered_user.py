@@ -5,7 +5,7 @@ from .utility import AccountsTestBase
 from ..models import ElevatedToken, IdentityToken
 
 
-class UserTest(AccountsTestBase):
+class UserEndpointsForRegisteredUserTest(AccountsTestBase):
 
     def get_tested_user(self):
         return self.registered_user
@@ -44,13 +44,6 @@ class UserTest(AccountsTestBase):
                          self.client.get(reverse('user-single-by-uuid', args=(self.loggedin_user.id,)),
                                          format='json').status_code)
 
-    def test_retrieve_by_uuid_response_contains_service_permissions(self):
-        self.login_and_authenticate_tested_user()
-        service_permission = self.assign_and_return_service_permission_for_user(self.get_tested_user())
-        self.assertEqual(str(service_permission),
-                         self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-                                         format='json').data['service_permissions'][0])
-
     # retrieve by token
 
     def test_retrieve_by_token_is_forbidden_for_registered_user_if_not_logged_in(self):
@@ -86,14 +79,6 @@ class UserTest(AccountsTestBase):
                          self.client.get(reverse('user-single-by-token',
                                                  args=(ElevatedToken.objects.get(user=self.loggedin_user).key,)),
                                          format='json').status_code)
-
-    def test_retrieve_by_token_response_contains_service_permissions(self):
-        self.login_and_authenticate_tested_user()
-        service_permission = self.assign_and_return_service_permission_for_user(self.get_tested_user())
-        self.assertEqual(str(service_permission),
-                         self.client.get(
-                             reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
-                             format='json').data['service_permissions'][0])
 
     # update by uuid
 
@@ -187,21 +172,3 @@ class UserTest(AccountsTestBase):
         self.client.delete(reverse('user-single-by-token', args=(self.get_tested_user_elevated_token_key(),)),
                            format='json')
         self.assertEqual(0, ElevatedToken.objects.filter(user=self.get_tested_user()).count())
-
-    # tmp
-
-    # def test_retrieve_by_uuid_tmp_with_jwt(self):
-    #     self.login_and_authenticate_tested_user_with_jwt()
-    #     from ..authorization import is_loggedin, is_authenticated
-    #     print('authenticated')
-    #     print(self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-    #                     format='json').data)
-
-    # print(self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-    #                       format='json').data)
-
-    # for method in self.get_tested_user_authentication_methods():
-    #     getattr(self, method)()
-    #     print(method)
-    #     print(self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-    #                           format='json').data)

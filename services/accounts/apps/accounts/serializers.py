@@ -1,9 +1,7 @@
-from django.contrib.auth.models import Permission
-from django.utils.text import slugify
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, EmailField, BooleanField, ValidationError
 from rest_framework_jwt.settings import api_settings
 
-from .authorization import is_loggedin
+from .authorization import is_loggedin, get_user_permissions_string_list, get_user_service_permissions_string_list
 from .models import User, IdentityToken, ElevatedToken
 
 
@@ -40,20 +38,11 @@ class UserSerializer(ModelSerializer):
         return jwt_encode_handler(jwt_payload_handler(instance))
 
     def get_user_permissions(self, instance):
-        def get_unique_permissions_list(permissions_set):
-            return list(set(['{}.{}.{}'.format(slugify(perm.content_type.app_label).replace('-', '_'),
-                                               slugify(perm.content_type).replace('-', '_'),
-                                               slugify(perm.codename).replace('-', '_')) for perm in permissions_set]))
-
-        if instance.is_superuser and is_loggedin(self.context['request']):
-            return get_unique_permissions_list(Permission.objects.all())
-
-        return get_unique_permissions_list(
-            instance.user_permissions.all() | Permission.objects.filter(group__user=instance))
+        return get_user_permissions_string_list(instance)
 
     @staticmethod
     def get_service_permissions(instance):
-        return [str(perm) for perm in instance.service_permissions.all()]
+        return get_user_service_permissions_string_list(instance)
 
     def validate_email(self, value):
         if value == self.context['request'].user.email:

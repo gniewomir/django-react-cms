@@ -135,6 +135,11 @@ class AccountsTestBase(APITestCase):
         return jwt_encode_handler(jwt_payload_handler(user))
 
     @staticmethod
+    def decode_jwt(jwt_value):
+        jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
+        return jwt_decode_handler(jwt_value)
+
+    @staticmethod
     def assign_and_return_service_permission_for_user(user, service_name='cms',
                                                       service_permission='view_public_content'):
         service, created = Service.objects.get_or_create(name=service_name)

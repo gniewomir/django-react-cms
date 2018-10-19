@@ -14,7 +14,8 @@ Todo
 * [x] Setup ownership permissions
 * [x] Setup selecting user by token, not only uuid
 * [x] Setup services permissions 
-* [ ] Setup JWT authentication 
+* [x] Setup JWT authentication
+* [ ] Setup SOA JWT tokens 
 * [ ] Setup changing password 
 * [ ] Setup token expiration
 * [ ] Choose and configure password hashing

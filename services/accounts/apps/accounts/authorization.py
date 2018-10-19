@@ -1,10 +1,26 @@
+from django.contrib.auth.models import Permission
+from django.utils.text import slugify
 from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework_jwt.settings import api_settings
 
-from .models import User, ElevatedToken, IdentityToken
+from .models import User, IdentityToken, ElevatedToken
 
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
+
+
+def get_user_permissions_string_list(user):
+    def get_unique_permissions_list(permissions_set):
+        return list(set(['{}.{}.{}'.format(slugify(perm.content_type.app_label).replace('-', '_'),
+                                           slugify(perm.content_type).replace('-', '_'),
+                                           slugify(perm.codename).replace('-', '_')) for perm in permissions_set]))
+
+    return get_unique_permissions_list(
+        user.user_permissions.all() | Permission.objects.filter(group__user=user))
+
+
+def get_user_service_permissions_string_list(user):
+    return [str(perm) for perm in user.service_permissions.all()]
 
 
 def is_authenticated(request=None):
@@ -20,7 +36,12 @@ def is_authenticated(request=None):
             return request.auth == ElevatedToken.objects.get(user=request.user)
         except ElevatedToken.DoesNotExist:
             return False
-    return True
+    if isinstance(request.auth, dict):
+        try:
+            return request.auth['identity_token'] == IdentityToken.objects.get(user=request.user).key
+        except IdentityToken.DoesNotExist:
+            return False
+    return False
 
 
 def is_registered(request=None):
@@ -28,8 +49,17 @@ def is_registered(request=None):
 
 
 def is_loggedin(request=None):
-    return is_registered(request) and isinstance(request.auth, ElevatedToken)
-
+    if not is_registered(request):
+        return False
+    if isinstance(request.auth, ElevatedToken):
+        return True
+    if not isinstance(request.auth, dict) or 'elevated_token' not in request.auth or request.auth['elevated_token'] is None:
+        return False
+    try:
+        ElevatedToken.objects.get(key=request.auth['elevated_token'])
+        return True
+    except ElevatedToken.DoesNotExist:
+        return False
 
 class IsAuthenticated(BasePermission):
 

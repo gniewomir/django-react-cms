@@ -1,12 +1,60 @@
+import jwt
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_jwt.utils import jwt_payload_handler, jwt_decode_handler
 
-from .models import ElevatedToken, IdentityToken
+from .authorization import get_user_permissions_string_list, get_user_service_permissions_string_list
+from .models import ElevatedToken, IdentityToken, User
+
+
+def accounts_jwt_payload_handler(user):
+    payload = jwt_payload_handler(user)
+    payload.pop('username')
+    payload.pop('email')
+
+    try:
+        payload['identity_token'] = IdentityToken.objects.get(user=user).key
+    except IdentityToken.DoesNotExist:
+        raise AuthenticationFailed('Identity token does not exist!')
+
+    try:
+        payload['elevated_token'] = ElevatedToken.objects.get(user=user).key
+    except ElevatedToken.DoesNotExist:
+        payload['elevated_token'] = None
+
+    payload['user_permissions'] = get_user_permissions_string_list(user)
+    payload['service_permissions'] = get_user_service_permissions_string_list(user)
+    return payload
 
 
 class JWTAuthentication(JSONWebTokenAuthentication):
+
+    def authenticate(self, request):
+        jwt_value = self.get_jwt_value(request)
+        if jwt_value is None:
+            return None
+        try:
+            payload = jwt_decode_handler(jwt_value)
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed('Signature has expired.')
+        except jwt.DecodeError:
+            raise AuthenticationFailed('Error decoding signature.')
+        except jwt.InvalidTokenError:
+            raise AuthenticationFailed()
+
+        return self.authenticate_credentials(payload)
+
     def authenticate_credentials(self, payload):
-        return super().authenticate_credentials(payload), payload
+        try:
+            user = IdentityToken.objects.select_related('user').get(key=payload['identity_token']).user
+        except IdentityToken.DoesNotExist:
+            raise AuthenticationFailed('No valid token in JWT payload!')
+        except User.DoesNotExist:
+            raise AuthenticationFailed('No valid token in JWT payload!')
+        if not user.is_active:
+            raise AuthenticationFailed('User account is disabled.')
+        return user, payload
 
 
 class ElevatedTokenAuthentication(TokenAuthentication):
