@@ -8,7 +8,7 @@ services:
       context: ./
       dockerfile: ./services/nginx/Dockerfile
       args:
-        environment: $ENVIRONMENT
+        environment: development
     ports:
     - "80:80"
     volumes:
@@ -26,7 +26,9 @@ services:
       context: ./
       dockerfile: ./services/graphql/Dockerfile
       args:
-        environment: $ENVIRONMENT
+        environment: development
+    env_file:
+      - ./.env/development.env
     expose:
     - "4000"
     networks:
@@ -38,13 +40,15 @@ services:
       context: ./
       dockerfile: ./services/accounts/Dockerfile
       args:
-        environment: $ENVIRONMENT
+        environment: development
     expose:
     - "8000"
     volumes:
     - /home/django/app
     - static:/home/django/app/static
-    env_file: .env
+    env_file:
+      - ./.env/development.env
+      - ./.env/development.secret.env
     depends_on:
     - accounts-postgres
     - redis
@@ -65,13 +69,15 @@ services:
       context: ./
       dockerfile: ./services/cms/Dockerfile
       args:
-        environment: $ENVIRONMENT
+        environment: development
     expose:
     - "8000"
     volumes:
     - /home/django/app
     - static:/home/django/app/static
-    env_file: .env
+    env_file:
+      - ./.env/development.env
+      - ./.env/development.secret.env
     depends_on:
     - cms-postgres
     - redis

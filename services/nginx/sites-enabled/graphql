@@ -4,7 +4,7 @@ server {
     server_name graphql.enraged.local;
     charset utf-8;
 
-    location /graphql {
+    location / {
         proxy_pass http://graphql:4000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
