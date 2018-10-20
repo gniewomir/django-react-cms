@@ -4,7 +4,11 @@ services:
 
   nginx:
     restart: always
-    build: ./services/nginx/
+    build:
+      context: ./
+      dockerfile: ./services/nginx/Dockerfile
+      args:
+        environment: $ENVIRONMENT
     ports:
     - "80:80"
     volumes:
@@ -16,10 +20,23 @@ services:
     - front-tier
     - back-tier
 
+  graphql:
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./services/graphql/Dockerfile
+      args:
+        environment: $ENVIRONMENT
+    expose:
+    - "4000"
+    networks:
+    - back-tier
+
   accounts:
     restart: always
     build:
-      context: ./services/accounts
+      context: ./
+      dockerfile: ./services/accounts/Dockerfile
       args:
         environment: $ENVIRONMENT
     expose:
@@ -45,7 +62,8 @@ services:
   cms:
     restart: always
     build:
-      context: ./services/cms
+      context: ./
+      dockerfile: ./services/cms/Dockerfile
       args:
         environment: $ENVIRONMENT
     expose:
@@ -67,7 +85,6 @@ services:
     - "cms-postgres:/var/lib/postgresql/data"
     networks:
     - back-tier
-
 
   redis:
     restart: always

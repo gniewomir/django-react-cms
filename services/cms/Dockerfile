@@ -5,6 +5,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PATH /root/.local/bin:$PATH
 WORKDIR /home/django/app
-COPY . /home/django/app
+COPY ./services/cms/ /home/django/app
+COPY ./shared/ /home/django/app/shared
 RUN pip install --user --no-cache-dir -r requirements.txt
 CMD ["/root/.local/bin/gunicorn","settings.wsgi:application","-w 2", "-b :8000"]

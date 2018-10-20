@@ -61,6 +61,7 @@ def is_loggedin(request=None):
     except ElevatedToken.DoesNotExist:
         return False
 
+
 class IsAuthenticated(BasePermission):
 
     def has_permission(self, request, view):

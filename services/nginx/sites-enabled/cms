@@ -1,7 +1,7 @@
 server {
 
     listen 80;
-    server_name accounts.enraged.pl;
+    server_name graphql.enraged.local;
     charset utf-8;
 
     location /static {
