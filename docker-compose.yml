@@ -29,6 +29,7 @@ services:
         environment: development
     env_file:
       - ./.env/development.env
+      - ./.env/development.secret.env
     expose:
     - "4000"
     networks:

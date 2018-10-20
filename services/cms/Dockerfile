@@ -8,4 +8,4 @@ WORKDIR /home/django/app
 COPY ./services/cms/ /home/django/app
 COPY ./shared/ /home/django/app/shared
 RUN pip install --user --no-cache-dir -r requirements.txt
-CMD ["/root/.local/bin/gunicorn","settings.wsgi:application","-w 2", "-b :8000"]
+ENTRYPOINT ["bash", "/home/django/app/startup.sh"]
