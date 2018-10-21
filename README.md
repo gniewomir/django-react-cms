@@ -4,6 +4,14 @@ Setup
 - go to `.env` folder and remove `.dist` extensions 
 - `docker-compose up`
 
+Goals
+--
+* [ ] Visual page builder allowing fo quick assembling sites/pages from pre-made react components
+* [ ] Fast scaffolding of new services
+* [ ] SSR out of the box 
+* [ ] Full front-end tooling out of the box
+* [ ] Easy deployment and scaling 
+
 Todo
 --
 
