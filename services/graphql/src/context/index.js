@@ -1,4 +1,3 @@
-const {AuthenticationError} = require('apollo-server');
 const {services: {accounts}, secret} = require('../config');
 const fetch = require('node-fetch');
 const {verify} = require('jsonwebtoken');
