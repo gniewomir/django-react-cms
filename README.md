@@ -14,6 +14,7 @@ Todo
 * [ ] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
 * [ ] [Create React App, Storybook, Express](https://github.com/gniewomir/django-react-cms/tree/master/services/react)
 * [ ] Rename project to `Enraged SOA`
+* [ ] Move JWT validation to separate, lightweight service to remove shared secret from GraphQL
 * [ ] Mailer service
 * [ ] Media service
 * [ ] Content service
