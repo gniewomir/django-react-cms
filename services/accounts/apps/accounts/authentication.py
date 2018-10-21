@@ -4,11 +4,11 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.utils import jwt_payload_handler, jwt_decode_handler
 
-from .authorization import get_user_permissions_string_list, get_user_service_permissions_string_list
+from .authorization import get_user_permissions_string_list, get_user_service_permissions_string_list, is_loggedin
 from .models import ElevatedToken, IdentityToken, User
 
 
-def accounts_jwt_payload_handler(user):
+def accounts_jwt_payload_handler(user, request=None):
     payload = jwt_payload_handler(user)
     payload.pop('username')
     payload.pop('email')
@@ -18,9 +18,9 @@ def accounts_jwt_payload_handler(user):
     except IdentityToken.DoesNotExist:
         raise AuthenticationFailed('Identity token does not exist!')
 
-    try:
+    if request is not None and is_loggedin(request):
         payload['elevated_token'] = ElevatedToken.objects.get(user=user).key
-    except ElevatedToken.DoesNotExist:
+    else:
         payload['elevated_token'] = None
 
     payload['user_permissions'] = get_user_permissions_string_list(user)
