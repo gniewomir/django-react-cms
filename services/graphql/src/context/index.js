@@ -32,7 +32,7 @@ const get = async (token) => {
         return Promise.reject(decoding_error);
     }
     if (!json.identity_token) {
-        return Promise.reject('Cannot create user!');
+        return Promise.reject('Invalid user!');
     }
     return Promise.resolve({
         user: json,
@@ -68,5 +68,5 @@ module.exports = async ({req}) => {
     if (token && type === 'Bearer') {
         return check(token);
     }
-    throw new AuthenticationError('Invalid authentication header!');
+    return Promise.reject('Invalid authentication header!');
 };
