@@ -1,6 +1,6 @@
 __pycache__
 .idea
-*.env
+**/*.env
 *.log
 .coverage
 node_modules
