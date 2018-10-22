@@ -22,13 +22,17 @@ Todo
 
 * [x] [Accounts service](https://github.com/gniewomir/django-react-cms/tree/master/services/accounts)
 * [ ] [GraphQL service](https://github.com/gniewomir/django-react-cms/tree/master/services/graphql)
+* [ ] Setup SSL
 * [ ] Rename `CMS service` to `Components service` 
 * [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
-* [ ] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
+* [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
 * [ ] [Create React App, Storybook, Express](https://github.com/gniewomir/django-react-cms/tree/master/services/react)
 * [ ] Rename project to `Enraged SOA`
 * [ ] Move JWT validation to separate, lightweight service to remove shared secret from GraphQL
+* [ ] Scrapper service
 * [ ] Mailer service
 * [ ] Media service
 * [ ] Content service
 * [ ] Centralized logging 
+* [ ] Automated build and pushing of images to Amazon ECR
+* [ ] Automated deployment to Amazon ECS

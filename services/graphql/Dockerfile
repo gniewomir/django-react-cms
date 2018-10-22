@@ -3,4 +3,3 @@ WORKDIR /home/node/app
 COPY ./services/graphql/ /home/node/app
 RUN npm ci
 CMD ["npm", "run", "start"]
-

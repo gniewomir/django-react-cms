@@ -15,12 +15,6 @@ class UserEndpointsForRegisteredUserTest(AccountsTestBase):
 
     # retrieve by uuid
 
-    def test_retrieve_by_uuid_is_forbidden_for_registered_user_if_not_logged_in(self):
-        self.authenticate_tested_user()
-        self.assertEqual(status.HTTP_403_FORBIDDEN,
-                         self.client.get(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-                                         format='json').status_code)
-
     def test_retrieve_by_uuid_user_can_retrieve_itself_if_logged_in(self):
         self.login_and_authenticate_tested_user()
         self.assertEqual(status.HTTP_200_OK,
@@ -45,13 +39,6 @@ class UserEndpointsForRegisteredUserTest(AccountsTestBase):
                                          format='json').status_code)
 
     # retrieve by token
-
-    def test_retrieve_by_token_is_forbidden_for_registered_user_if_not_logged_in(self):
-        self.authenticate_tested_user()
-        self.assertEqual(status.HTTP_403_FORBIDDEN,
-                         self.client.get(
-                             reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
-                             format='json').status_code)
 
     def test_retrieve_by_token_user_can_retrieve_itself_if_logged_in(self):
         self.login_and_authenticate_tested_user()
@@ -87,7 +74,7 @@ class UserEndpointsForRegisteredUserTest(AccountsTestBase):
         self.authenticate_tested_user()
         self.assertEqual(status.HTTP_403_FORBIDDEN,
                          self.client.patch(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-                                           {'email', new_email},
+                                           {'email': new_email},
                                            format='json').status_code)
 
     def test_update_by_uuid_is_allowed_for_registered_user_logged_in(self):
@@ -124,7 +111,7 @@ class UserEndpointsForRegisteredUserTest(AccountsTestBase):
         self.assertEqual(status.HTTP_403_FORBIDDEN,
                          self.client.patch(
                              reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
-                             {'email', new_email},
+                             {'email': new_email},
                              format='json').status_code)
 
     def test_update_by_token_is_allowed_for_registered_user_logged_in(self):
@@ -172,3 +159,43 @@ class UserEndpointsForRegisteredUserTest(AccountsTestBase):
         self.client.delete(reverse('user-single-by-token', args=(self.get_tested_user_elevated_token_key(),)),
                            format='json')
         self.assertEqual(0, ElevatedToken.objects.filter(user=self.get_tested_user()).count())
+
+    # create/login
+
+    def test_login_with_email_returns_identity_token(self):
+        self.authenticate_tested_user()
+        self.assertIsNotNone(
+            self.client.post(reverse('users'),
+                             {'email': self.get_tested_user().email, 'password': self.get_tested_user_password()},
+                             format='json').data['identity_token'])
+
+    def test_login_with_email_returns_elevated_token(self):
+        self.authenticate_tested_user()
+        self.assertIsNotNone(
+            self.client.post(reverse('users'),
+                             {'email': self.get_tested_user().email, 'password': self.get_tested_user_password()},
+                             format='json').data['elevated_token'])
+
+    def test_login_with_email_fails_with_invalid_email(self):
+        self.authenticate_tested_user()
+        self.assertEqual(status.HTTP_403_FORBIDDEN,
+                         self.client.post(reverse('users'),
+                                          {'email': 'invalid@email.com', 'password': self.get_tested_user_password()},
+                                          format='json').status_code)
+
+    def test_login_with_email_fails_with_invalid_password(self):
+        self.authenticate_tested_user()
+        self.assertEqual(status.HTTP_403_FORBIDDEN,
+                         self.client.post(reverse('users'),
+                                          {'email': self.get_tested_user().email, 'password': 'invalid_password'},
+                                          format='json').status_code)
+
+    def test_login_is_forbidden_if_user_is_not_registered(self):
+        user = self.get_tested_user()
+        user.is_registered = False
+        user.save()
+        self.assertEqual(status.HTTP_403_FORBIDDEN,
+                         self.client.post(reverse('users'),
+                                          {'email': user.email,
+                                           'password': self.get_tested_user_password()},
+                                          format='json').status_code)

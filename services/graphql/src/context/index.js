@@ -2,70 +2,91 @@ const {services: {accounts}, secret} = require('../config');
 const fetch = require('node-fetch');
 const {verify} = require('jsonwebtoken');
 const {to} = require('await-to-js');
+const {AuthenticationError} = require('apollo-server');
 
-const create = async () => {
+const createUser = async () => {
     const [response_error, response] = await to(fetch(`${accounts}/user/`, {method: 'post'}));
     if (response_error) {
-        return Promise.reject(response_error);
+        return {
+            error: response_error
+        }
     }
     const [decoding_error, json] = await to(response.json());
     if (decoding_error) {
-        return Promise.reject(decoding_error);
+        return {
+            error: decoding_error
+        }
     }
-    if (!json.identity_token) {
-        return Promise.reject('Cannot create user!');
-    }
-    return Promise.resolve({
+    return {
         user: json,
         token: json.identity_token,
+        auth: `Token ${json.identity_token}`,
         loggedin: false
-    });
+    };
 };
-const get = async (token) => {
-    const [response_error, response] = await to(fetch(`${accounts}/user/${token}`));
+
+const getUser = async (token) => {
+    const [response_error, response] = await to(fetch(
+        `${accounts}/user/${token}`,
+        {
+            method: 'get',
+            headers: {
+                'authorization': `Token ${token}`
+            }
+        }
+    ));
     if (response_error) {
-        return Promise.reject(response_error);
+        return {
+            error: response_error
+        }
     }
     const [decoding_error, json] = await to(response.json());
     if (decoding_error) {
-        return Promise.reject(decoding_error);
-    }
-    if (!json.identity_token) {
-        return Promise.reject('Invalid user!');
-    }
-    return Promise.resolve({
-        user: json,
-        token: token === json.elevated_token ? json.elevated_token : json.identity_token,
-        loggedin: token === json.elevated_token
-    });
-};
-
-const check = async (token) => {
-    if (!secret) {
-        return Promise.reject('Cannot validate JWT token!')
-    }
-    verify(token, secret, (err, user) => {
-        if (err) {
-            return Promise.reject(err);
+        return {
+            error: decoding_error
         }
-        return Promise.resolve({
-            user,
-            token,
-            loggedin: !!user.elevated_token
-        })
-    });
+    }
+    return {
+        user: json,
+        token: token,
+        auth: `Token ${token}`,
+        loggedin: !!json.elevated_token
+    };
 };
 
-module.exports = async ({req}) => {
+const checkUserToken = (token) => {
+    let user = {};
+    try {
+        user = verify(token, secret);
+    } catch (error) {
+        return {
+            error
+        }
+    }
+    return {
+        user,
+        token,
+        auth: `Bearer ${token}`,
+        loggedin: !!user.elevated_token
+    }
+};
+
+const rejectOrResolve = (context) => {
+    return context.error
+        ? Promise.reject(typeof context.error === 'string' ? new AuthenticationError(context.error) : context.error)
+        : Promise.resolve(context);
+};
+
+module.exports = ({req}) => {
     if (!req.headers.authorization) {
-        return create();
+        return rejectOrResolve(createUser());
     }
     const [type, token] = req.headers.authorization.split(' ');
     if (token && type === 'Token') {
-        return get(token);
+        return rejectOrResolve(getUser(token));
     }
     if (token && type === 'Bearer') {
-        return check(token);
+        return rejectOrResolve(checkUserToken(token));
     }
-    return Promise.reject('Invalid authentication header!');
+    return Promise.reject(new AuthenticationError('Invalid authentication header!'));
 };

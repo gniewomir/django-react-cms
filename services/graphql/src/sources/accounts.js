@@ -8,19 +8,31 @@ module.exports = class AccountsService extends RESTDataSource {
     }
 
     willSendRequest(request) {
-        request.headers.set('Authorization', `Token ${this.context.token}`);
+        request.headers.set('authorization', this.context.auth);
     }
 
-    async createUser() {
-        return this.post('users/')
+    createUser() {
+        return this.post('user/')
     }
 
-    async getUserByToken(token) {
-        return this.get(`users/${token}`)
+    getCurrentUser() {
+        return this.get(`user/${this.context.user.identity_token}/`)
     }
 
-    async getUserByUUID(uuid) {
-        return this.get(`users/${uuid}`)
+    getUserByUUID(uuid) {
+        return this.get(`user/${uuid}/`)
+    }
+
+    update(args) {
+        return this.patch(`user/${this.context.user.identity_token}/`, args)
+    }
+
+    login(args) {
+        return this.post(`user/`, args)
+    }
+
+    logout() {
+        return this.delete(`user/${this.context.user.identity_token}/`)
     }
 };
 

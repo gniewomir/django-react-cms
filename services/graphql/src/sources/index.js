@@ -1,7 +1,7 @@
 const AccountsService = require('./accounts.js');
-
-module.exports = () => {
+const sources = () => {
     return {
         AccountsService: new AccountsService()
     };
 };
+module.exports = sources;

@@ -1,23 +1,32 @@
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
-const books = [
-  {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
-  },
-  {
-    title: 'Jurassic Park',
-    author: 'Michael Crichton',
-  },
-];
-
 const resolvers = {
-  Query: {
-    books: () => books
-  },
+    Query: {
+        userIdentity: async (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.getCurrentUser();
+        },
+        user: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.getCurrentUser();
+        }
+    },
+    Mutation: {
+        acceptPrivacyPolicy: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.update({'accepted_privacy_policy': true});
+        },
+        collectEmail: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.update(args.input);
+        },
+        registerUser: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.update(args.input);
+        },
+        loginUser: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.login(args.input);
+        },
+        updateUser: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.update(args.input);
+        },
+        logoutUser: (parent, args, {dataSources}) => {
+            return dataSources.AccountsService.logout();
+        },
+    }
 };
 
-// Resolvers define the technique for fetching the types in the
-// schema.  We'll retrieve books from the "books" array above.
 module.exports = resolvers;

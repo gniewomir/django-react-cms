@@ -1,4 +1,5 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, EmailField, BooleanField, ValidationError
+from django.utils import timezone
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, BooleanField, ValidationError, EmailField
 from rest_framework_jwt.settings import api_settings
 
 from .authorization import is_loggedin, get_user_permissions_string_list, get_user_service_permissions_string_list
@@ -14,7 +15,7 @@ class UserSerializer(ModelSerializer):
     accepted_terms_of_service = BooleanField()
     accepted_privacy_policy = BooleanField()
     is_registered = BooleanField()
-    email = EmailField()
+    email = EmailField(allow_blank=True)
 
     def get_identity_token(self, instance):
         if 'identity_token' in self.context:
@@ -35,11 +36,12 @@ class UserSerializer(ModelSerializer):
     def get_jwt_token(self, instance):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        return jwt_encode_handler(jwt_payload_handler(instance,
-                                                      ElevatedToken.objects.get(user=instance).key if is_loggedin(
-                                                          self.context['request']) else None))
+        if is_loggedin(self.context['request']) or 'elevated_token' in self.context:
+            return jwt_encode_handler(jwt_payload_handler(instance, ElevatedToken.objects.get(user=instance).key))
+        return None
 
-    def get_user_permissions(self, instance):
+    @staticmethod
+    def get_user_permissions(instance):
         return get_user_permissions_string_list(instance)
 
     @staticmethod
@@ -60,7 +62,7 @@ class UserSerializer(ModelSerializer):
             'user_permissions', 'service_permissions', 'is_registered', 'accepted_privacy_policy',
             'accepted_terms_of_service')
         read_only_fields = (
-            'id', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'user_permissions',
+            'id', 'username', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'user_permissions',
             'service_permissions')
 
 
@@ -68,9 +70,9 @@ class AuthenticatedUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = (
-            'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy')
-        read_only_fields = (
-            'identity_token', 'elevated_token', 'jwt_token', 'is_registered')
+            'identity_token', 'elevated_token', 'jwt_token', 'email', 'is_registered', 'accepted_privacy_policy',
+            'accepted_terms_of_service')
+        read_only_fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered')
 
 
 class AuthorizedUserSerializer(UserSerializer):
@@ -81,5 +83,57 @@ class AuthorizedUserSerializer(UserSerializer):
             'user_permissions', 'service_permissions', 'is_registered', 'accepted_privacy_policy',
             'accepted_terms_of_service')
         read_only_fields = (
-            'id', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'user_permissions',
-            'service_permissions')
+            'id', 'username', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'username',
+            'first_name', 'last_name', 'user_permissions', 'service_permissions')
+
+
+class CollectEmailSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered')
+
+
+class AcceptPrivacyPolicySerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = ('accepted_privacy_policy',  'identity_token', 'elevated_token', 'jwt_token', 'is_registered')
+
+
+class LoginUserSerializer(UserSerializer):
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        elevated_token, created = ElevatedToken.objects.get_or_create(user=instance)
+        instance.date_login = timezone.now()
+        instance.elevated_token = elevated_token
+        instance.save()
+        return instance
+
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'first_name', 'last_name', 'identity_token', 'elevated_token', 'jwt_token',
+                  'is_registered', 'accepted_privacy_policy', 'accepted_terms_of_service')
+        extra_kwargs = {
+            'email': {'write_only': True},
+            'password': {'write_only': True}
+        }
+
+
+class RegisterUserSerializer(UserSerializer):
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        instance.set_password(validated_data.get('password'))
+        instance.is_registered = True
+        instance.date_registered = timezone.now()
+        instance.save()
+        return instance
+
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'first_name', 'last_name', 'identity_token', 'elevated_token', 'jwt_token',
+                  'is_registered', 'accepted_privacy_policy', 'accepted_terms_of_service', 'date_registered')
+        extra_kwargs = {
+            'email': {'write_only': True},
+            'password': {'write_only': True}
+        }

@@ -63,13 +63,25 @@ class UserEndpointsForAuthenticatedUserTest(AccountsTestBase):
                                            {'email': 'new@email.com'},
                                            format='json').status_code)
 
-    def test_update_by_uuid_user_can_update_own_email_and_privacy_policy(self):
+    def test_update_by_uuid_user_can_update_own_email_if_he_accepted_privacy_policy(self):
         new_email = 'new@email.com'
-        new_accepted_privacy_policy = True
+        self.get_tested_user().accepted_privacy_policy = True
+        self.get_tested_user().save()
         self.authenticate_tested_user()
         self.assertEqual(status.HTTP_200_OK,
                          self.client.patch(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
-                                           {'email': new_email, 'accepted_privacy_policy': new_accepted_privacy_policy},
+                                           {'email': new_email},
+                                           format='json').status_code)
+        self.get_tested_user().refresh_from_db()
+        self.assertEqual(new_email, self.get_tested_user().email)
+
+    def test_update_by_uuid_user_cannot_update_own_email_if_he_did_not_accepted_privacy_policy(self):
+        self.get_tested_user().accepted_privacy_policy = False
+        self.get_tested_user().save()
+        self.authenticate_tested_user()
+        self.assertEqual(status.HTTP_403_FORBIDDEN,
+                         self.client.patch(reverse('user-single-by-uuid', args=(self.get_tested_user().id,)),
+                                           {'email': 'new@email.com'},
                                            format='json').status_code)
 
     def test_update_by_uuid_user_updates_privacy_policy(self):
@@ -142,7 +154,26 @@ class UserEndpointsForAuthenticatedUserTest(AccountsTestBase):
         self.authenticate_tested_user()
         self.assertTrue(
             self.client.patch(reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
-                              data={'username': 'test', 'email': 'test@test.net',
-                                    'password': 'password', 'accepted_privacy_policy': True,
+                              data={'email': 'test@test.net', 'password': 'password', 'accepted_privacy_policy': True,
                                     'accepted_terms_of_service': True},
                               format='json').data['is_registered'])
+
+    def test_update_by_token_with_values_required_by_registration_sets_accepted_terms_of_service_flag(self):
+        self.authenticate_tested_user()
+        self.assertTrue(
+            self.client.patch(reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
+                              data={'email': 'test@test.net', 'password': 'password', 'accepted_privacy_policy': True,
+                                    'accepted_terms_of_service': True},
+                              format='json').data['accepted_terms_of_service'])
+
+    def test_update_by_token_with_values_required_by_registration_updates_email(self):
+        new_email = 'test@test.net'
+        self.authenticate_tested_user()
+        self.assertEqual(
+            new_email,
+            self.client.patch(reverse('user-single-by-token', args=(self.get_tested_user_identity_token_key(),)),
+                              data={'email': new_email, 'password': 'password', 'accepted_privacy_policy': True,
+                                    'accepted_terms_of_service': True},
+                              format='json').data['email'])
+        self.get_tested_user().refresh_from_db()
+        self.assertEqual(new_email, self.get_tested_user().email)

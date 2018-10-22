@@ -71,13 +71,19 @@ class IsAuthenticated(BasePermission):
 class IsOwner(BasePermission):
 
     def has_permission(self, request, view):
-        if is_loggedin(request):
-            return True
-        if is_registered(request):
-            return False
         return is_authenticated(request)
 
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, User) and obj == request.user:
             return True
         return False
+
+
+class IsLoggedInOwner(IsOwner):
+
+    def has_permission(self, request, view):
+        if is_loggedin(request):
+            return True
+        if is_registered(request):
+            return False
+        return is_authenticated(request)

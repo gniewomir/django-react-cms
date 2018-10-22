@@ -65,47 +65,6 @@ class UserEndpointsForAnonymousUserTest(AccountsTestBase):
                                           {'email': self.get_tested_user().email, 'password': 'invalid_password'},
                                           format='json').status_code)
 
-    def test_login_with_username_is_allowed_without_authentication(self):
-        self.assertEqual(status.HTTP_200_OK,
-                         self.client.post(reverse('users'),
-                                          {'username': self.get_tested_user().username,
-                                           'password': self.get_tested_user_password()},
-                                          format='json').status_code)
-
-    def test_login_with_username_returns_identity_token(self):
-        self.assertIsNotNone(
-            self.client.post(reverse('users'),
-                             {'username': self.get_tested_user().username, 'password': self.get_tested_user_password()},
-                             format='json').data['identity_token'])
-
-    def test_login_with_username_returns_elevated_token(self):
-        self.assertIsNotNone(
-            self.client.post(reverse('users'),
-                             {'username': self.get_tested_user().username, 'password': self.get_tested_user_password()},
-                             format='json').data['elevated_token'])
-
-    def test_login_with_username_fails_with_invalid_email(self):
-        self.assertEqual(status.HTTP_403_FORBIDDEN,
-                         self.client.post(reverse('users'),
-                                          {'email': 'invalid_username', 'password': self.get_tested_user_password()},
-                                          format='json').status_code)
-
-    def test_login_with_username_fails_with_invalid_password(self):
-        self.assertEqual(status.HTTP_403_FORBIDDEN,
-                         self.client.post(reverse('users'),
-                                          {'email': self.get_tested_user().email, 'password': 'invalid_password'},
-                                          format='json').status_code)
-
-    def test_login_is_forbidden_if_user_is_not_registered(self):
-        user = self.get_tested_user()
-        user.is_registered = False
-        user.save()
-        self.assertEqual(status.HTTP_403_FORBIDDEN,
-                         self.client.post(reverse('users'),
-                                          {'username': user.username,
-                                           'password': self.get_tested_user_password()},
-                                          format='json').status_code)
-
     # retrieve
 
     def test_retrieve_by_uuid_is_forbidden_for_anonymous_user(self):

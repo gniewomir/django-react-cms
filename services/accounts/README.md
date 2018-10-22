@@ -23,8 +23,6 @@ Todo
 * [ ] Gather user unique user-agent's
 * [ ] Setup blocking user creation for bots
 * [ ] Document accounts app endpoints 
-* [ ] Create mailing service  
-
 
 Todo - Bugs
 -
