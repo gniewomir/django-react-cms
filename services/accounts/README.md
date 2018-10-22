@@ -15,7 +15,8 @@ Todo
 * [x] Setup selecting user by token, not only uuid
 * [x] Setup services permissions 
 * [x] Setup JWT authentication
-* [ ] Setup SOA JWT tokens 
+* [ ] Setup SOA JWT tokens
+* [ ] Add tests ensuring `none` encoding is not accepted when verifying JWT 
 * [ ] Setup changing password 
 * [ ] Setup token expiration
 * [ ] Choose and configure password hashing
@@ -27,3 +28,4 @@ Todo
 
 Todo - Bugs
 -
+* [ ] Admin interface is failing - "Unknown field(s) (user_service_permissions) specified for User. Check fields/fieldsets/exclude attributes of class AccountsUserAdmin."

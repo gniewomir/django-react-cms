@@ -1,7 +1,12 @@
 Setup
 --
 
-- go to `.env` folder and remove `.dist` extensions 
+- to setup `.env` files run 
+```shell
+sudo apt-get update 
+sudo apt-get install rename
+find . -name "*.env.dist" -exec rename 's/.env.dist$/.env/' {} \;
+```
 - `docker-compose up`
 
 Goals
