@@ -11,7 +11,7 @@ class AccountsUserAdmin(UserAdmin):
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (_('Permissions'), {'fields': ('is_active', 'is_registered', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions', 'user_service_permissions')}),
+                                       'groups', 'user_permissions', 'service_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     filter_horizontal = ('groups', 'user_permissions', 'service_permissions')

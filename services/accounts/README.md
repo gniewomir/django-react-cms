@@ -28,4 +28,4 @@ Todo
 
 Todo - Bugs
 -
-* [ ] Admin interface is failing - "Unknown field(s) (user_service_permissions) specified for User. Check fields/fieldsets/exclude attributes of class AccountsUserAdmin."
+* [x] Admin interface is failing - "Unknown field(s) (user_service_permissions) specified for User. Check fields/fieldsets/exclude attributes of class AccountsUserAdmin."
