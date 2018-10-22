@@ -53,7 +53,7 @@ def is_loggedin(request=None):
         return False
     if isinstance(request.auth, ElevatedToken):
         return True
-    if not isinstance(request.auth, dict) or 'elevated_token' not in request.auth or request.auth['elevated_token'] is None:
+    if not isinstance(request.auth, dict) or 'elevated_token' not in request.auth or not request.auth['elevated_token']:
         return False
     try:
         ElevatedToken.objects.get(key=request.auth['elevated_token'])

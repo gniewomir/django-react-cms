@@ -35,7 +35,9 @@ class UserSerializer(ModelSerializer):
     def get_jwt_token(self, instance):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        return jwt_encode_handler(jwt_payload_handler(instance))
+        return jwt_encode_handler(jwt_payload_handler(instance,
+                                                      ElevatedToken.objects.get(user=instance).key if is_loggedin(
+                                                          self.context['request']) else None))
 
     def get_user_permissions(self, instance):
         return get_user_permissions_string_list(instance)

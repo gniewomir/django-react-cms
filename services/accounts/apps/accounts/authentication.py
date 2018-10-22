@@ -8,7 +8,7 @@ from .authorization import get_user_permissions_string_list, get_user_service_pe
 from .models import ElevatedToken, IdentityToken, User
 
 
-def accounts_jwt_payload_handler(user, request=None):
+def accounts_jwt_payload_handler(user, elevated_token=None):
     payload = jwt_payload_handler(user)
     payload.pop('username')
     payload.pop('email')
@@ -18,11 +18,7 @@ def accounts_jwt_payload_handler(user, request=None):
     except IdentityToken.DoesNotExist:
         raise AuthenticationFailed('Identity token does not exist!')
 
-    if request is not None and is_loggedin(request):
-        payload['elevated_token'] = ElevatedToken.objects.get(user=user).key
-    else:
-        payload['elevated_token'] = None
-
+    payload['elevated_token'] = elevated_token
     payload['user_permissions'] = get_user_permissions_string_list(user)
     payload['service_permissions'] = get_user_service_permissions_string_list(user)
     return payload

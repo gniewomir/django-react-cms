@@ -39,16 +39,16 @@ class AccountsTestBase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
     def authenticate_user_with_jwt(self, user):
-        IdentityToken.objects.get(user=user)
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self._get_jwt_token(user))
+        token = IdentityToken.objects.get(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self._get_jwt_token(user, None))
 
     def login_user(self, user):
         token, created = ElevatedToken.objects.get_or_create(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
     def login_user_with_jwt(self, user):
-        ElevatedToken.objects.get_or_create(user=user)
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self._get_jwt_token(user))
+        elevated_token, created = ElevatedToken.objects.get_or_create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self._get_jwt_token(user, elevated_token.key))
 
     @staticmethod
     def generate_random_string():
@@ -129,10 +129,10 @@ class AccountsTestBase(APITestCase):
         return user
 
     @staticmethod
-    def _get_jwt_token(user):
+    def _get_jwt_token(user, elevated_token=None):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        return jwt_encode_handler(jwt_payload_handler(user))
+        return jwt_encode_handler(jwt_payload_handler(user, elevated_token))
 
     @staticmethod
     def decode_jwt(jwt_value):
