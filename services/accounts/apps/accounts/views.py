@@ -61,10 +61,7 @@ class UserView(ModelViewSet):
                 raise PermissionDenied('Not registered!')
             if not user.check_password(request.data.get('password')):
                 raise PermissionDenied('Invalid password!')
-            user.date_login = timezone.now()
-            elevated_token, created = ElevatedToken.objects.get_or_create(user=user)
-            serializer = self.get_serializer(user, data={}, partial=True, elevated_token=elevated_token,
-                                             serializer_class=LoginUserSerializer)
+            serializer = self.get_serializer(user, data={}, partial=True, serializer_class=LoginUserSerializer)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
