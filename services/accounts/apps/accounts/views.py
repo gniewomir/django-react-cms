@@ -2,7 +2,6 @@ from uuid import uuid4
 
 from django.db import transaction
 from django.http import Http404
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
@@ -12,7 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 from .authorization import IsOwner, IsLoggedInOwner, is_loggedin, is_registered
 from .models import User, ElevatedToken, IdentityToken
 from .serializers import AuthenticatedUserSerializer, AuthorizedUserSerializer, AcceptPrivacyPolicySerializer, \
-    CollectEmailSerializer, RegisterUserSerializer, LoginUserSerializer
+    CollectEmailSerializer, RegisterUserSerializer, LoginUserSerializer, CreateUserSerializer
 
 
 class UserView(ModelViewSet):
@@ -24,10 +23,6 @@ class UserView(ModelViewSet):
             serializer_class = kwargs.pop('serializer_class')
         else:
             serializer_class = AuthorizedUserSerializer if is_loggedin(self.request) else AuthenticatedUserSerializer
-        if 'elevated_token' in kwargs:
-            kwargs['context']['elevated_token'] = kwargs.pop('elevated_token')
-        if 'identity_token' in kwargs:
-            kwargs['context']['identity_token'] = kwargs.pop('identity_token')
         return serializer_class(*args, **kwargs)
 
     def get_permissions(self):
@@ -67,10 +62,8 @@ class UserView(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         # create new user otherwise
-        user = User.objects.create(username='user_{}'.format(uuid4()))
-        return Response(
-            self.get_serializer(user, identity_token=IdentityToken.objects.get_or_create(user=user)[0]).data,
-            status=status.HTTP_201_CREATED)
+        return Response(self.get_serializer(User.objects.create(username='user_{}'.format(uuid4())),
+                                            serializer_class=CreateUserSerializer).data, status=status.HTTP_201_CREATED)
 
     @transaction.atomic
     def update(self, request, *args, **kwargs):

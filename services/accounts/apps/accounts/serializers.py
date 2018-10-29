@@ -24,8 +24,6 @@ class UserSerializer(ModelSerializer):
         return token.key
 
     def get_elevated_token(self, instance):
-        if 'elevated_token' in self.context:
-            return self.context['elevated_token'].key
         if is_loggedin(self.context['request']):
             try:
                 return ElevatedToken.objects.get(user=instance).key
@@ -87,32 +85,59 @@ class AuthorizedUserSerializer(UserSerializer):
             'first_name', 'last_name', 'user_permissions', 'service_permissions')
 
 
+class CreateUserSerializer(UserSerializer):
+
+    def get_identity_token(self, instance):
+        identity_token, created = IdentityToken.objects.get_or_create(user=instance)
+        return identity_token.key
+
+    class Meta:
+        model = User
+        fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy',
+                  'accepted_terms_of_service')
+        read_only_fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy',
+                            'accepted_terms_of_service')
+
+
 class CollectEmailSerializer(UserSerializer):
     class Meta:
         model = User
-        fields = ('email', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered')
+        fields = ('email', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy',
+                  'accepted_terms_of_service')
+        read_only_fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy',
+                            'accepted_terms_of_service')
+        extra_kwargs = {
+            'email': {'write_only': True}
+        }
 
 
 class AcceptPrivacyPolicySerializer(UserSerializer):
     class Meta:
         model = User
-        fields = ('accepted_privacy_policy',  'identity_token', 'elevated_token', 'jwt_token', 'is_registered')
+        fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy',
+                  'accepted_terms_of_service')
+        read_only_fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered',
+                            'accepted_terms_of_service')
 
 
 class LoginUserSerializer(UserSerializer):
 
+    def get_elevated_token(self, instance):
+        elevated_token, created = ElevatedToken.objects.get_or_create(user=instance)
+        return elevated_token.key
+
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
-        elevated_token, created = ElevatedToken.objects.get_or_create(user=instance)
         instance.date_login = timezone.now()
-        instance.elevated_token = elevated_token
         instance.save()
         return instance
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'first_name', 'last_name', 'identity_token', 'elevated_token', 'jwt_token',
-                  'is_registered', 'accepted_privacy_policy', 'accepted_terms_of_service')
+        fields = ('email', 'password', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered',
+                  'accepted_privacy_policy', 'accepted_terms_of_service')
+        read_only_fields = ('identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'accepted_privacy_policy',
+                            'accepted_terms_of_service')
         extra_kwargs = {
             'email': {'write_only': True},
             'password': {'write_only': True}
