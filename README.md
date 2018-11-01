@@ -22,7 +22,8 @@ Todo
 
 * [x] [Accounts service](https://github.com/gniewomir/django-react-cms/tree/master/services/accounts)
 * [x] [GraphQL service](https://github.com/gniewomir/django-react-cms/tree/master/services/graphql)
-* [ ] Setup SSL
+* [ ] Setup SSL for development
+* [ ] Setup Certbot for production
 * [ ] Rename `CMS service` to `Components service` 
 * [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
 * [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
