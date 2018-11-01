@@ -2,15 +2,30 @@ const { gql } = require('apollo-server');
 
 types = gql` 
 
+    """
+    Get or create user authorization token
+    """
     type UserIdentity {
-        identity_token: String!
-        elevated_token: String
-        jwt_token: String
-        is_registered: Boolean
-        accepted_privacy_policy: Boolean
-        accepted_terms_of_service: Boolean
+        token: String!
     }
     
+    """
+    Get info on currently authorized user
+    """    
+    type UserInfo {
+        token: String!
+        is_loggedin: Boolean
+        is_registered: Boolean
+        accepted_privacy_policy: Boolean
+        accepted_terms_of_service: Boolean   
+        email: String
+        first_name: String
+        last_name: String 
+    }
+    
+    """
+    Get currently authorized user - available only for JWT authorized requests
+    """    
     type User  {
         identity_token: String!
         elevated_token: String
@@ -26,6 +41,7 @@ types = gql`
     
     type Query {
         userIdentity: UserIdentity
+        userInfo: UserInfo
         user: User
     }
     
@@ -56,12 +72,12 @@ types = gql`
     }
     
     type Mutation {
-        acceptPrivacyPolicy: UserIdentity
-        collectEmail(input: CollectEmailInput): UserIdentity
-        registerUser(input: RegisterUserInput): UserIdentity
-        loginUser(input: LoginUserInput): UserIdentity
+        acceptPrivacyPolicy: UserInfo
+        collectEmail(input: CollectEmailInput): UserInfo
+        registerUser(input: RegisterUserInput): UserInfo
+        loginUser(input: LoginUserInput): UserInfo
         logoutUser: UserIdentity
-        updateUser(input: UpdateUserInput): User        
+        updateUser(input: UpdateUserInput): UserInfo        
     }
 `;
 

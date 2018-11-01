@@ -5,6 +5,7 @@ Todo
 * [x] Setup authentication
 * [x] Setup schema for 'accounts'
 * [x] Setup resolvers for 'accounts' schema
-* [ ] Return JWT token only if request was authorized with JWT token
+* [x] Return JWT token only if request was authorized with JWT token
+* [ ] Move token validation outside graphql service and remove secret from container
 * [ ] Setup splitting and combining schema and resolvers for different entities
 * [ ] Setup BDD-like tests (https://github.com/intuit/karate ?)  

@@ -21,7 +21,7 @@ const createUser = async () => {
         user: json,
         token: json.identity_token,
         auth: `Token ${json.identity_token}`,
-        loggedin: false
+        auth_method: `token`
     };
 };
 
@@ -50,7 +50,7 @@ const getUser = async (token) => {
         user: json,
         token: token,
         auth: `Token ${token}`,
-        loggedin: !!json.elevated_token
+        auth_method: `token`
     };
 };
 
@@ -67,7 +67,7 @@ const checkUserToken = (token) => {
         user,
         token,
         auth: `Bearer ${token}`,
-        loggedin: !!user.elevated_token
+        auth_method: `jwt`
     }
 };
 
