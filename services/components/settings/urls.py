@@ -8,6 +8,6 @@ urlpatterns = [
     path('', include('apps.components.urls')),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('docs/', include_docs_urls(title='CMS API')),
-    path('schema/', get_schema_view(title='CMS API'))
+    path('docs/', include_docs_urls(title='COMPONENTS API')),
+    path('schema/', get_schema_view(title='COMPONENTS API'))
 ]

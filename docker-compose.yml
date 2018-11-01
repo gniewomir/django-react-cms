@@ -18,7 +18,7 @@ services:
     volumes:
     - static:/var/www/static:ro
     depends_on:
-    - cms
+    - components
     - accounts
     networks:
     - front-tier
@@ -70,11 +70,11 @@ services:
     networks:
     - back-tier
 
-  cms:
+  components:
     restart: always
     build:
       context: ./
-      dockerfile: ./services/cms/Dockerfile
+      dockerfile: ./services/components/Dockerfile
       args:
         environment: development
     expose:
@@ -83,20 +83,20 @@ services:
     - /home/django/app
     - static:/home/django/app/static
     env_file:
-      - ./services/cms/.env
+      - ./services/components/.env
       - ./secret.env
       - ./.env
     depends_on:
-    - cms-postgres
+    - components-postgres
     - redis
     networks:
     - back-tier
 
-  cms-postgres:
+  components-postgres:
     image: postgres:10
-    container_name: cms-postgres
+    container_name: components-postgres
     volumes:
-    - "cms-postgres:/var/lib/postgresql/data"
+    - "components-postgres:/var/lib/postgresql/data"
     networks:
     - back-tier
 
@@ -112,7 +112,7 @@ services:
 
 volumes:
   static:
-  cms-postgres:
+  components-postgres:
   accounts-postgres:
   redis:
 

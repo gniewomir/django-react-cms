@@ -79,11 +79,11 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['CMS_DB_NAME'],
-        'USER': os.environ['CMS_DB_USER'],
-        'PASSWORD': os.environ['CMS_DB_PASS'],
-        'HOST': os.environ['CMS_DB_SERVICE'],
-        'PORT': os.environ['CMS_DB_PORT']
+        'NAME': os.environ['COMPONENTS_DB_NAME'],
+        'USER': os.environ['COMPONENTS_DB_USER'],
+        'PASSWORD': os.environ['COMPONENTS_DB_PASS'],
+        'HOST': os.environ['COMPONENTS_DB_SERVICE'],
+        'PORT': os.environ['COMPONENTS_DB_PORT']
     }
 }
 
@@ -110,5 +110,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'cms')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'components')
 
