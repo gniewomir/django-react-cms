@@ -1,4 +1,4 @@
-Setup
+Development setup
 --
 
 - to setup `.env` files run 
@@ -7,7 +7,9 @@ sudo apt-get update
 sudo apt-get install rename
 find . -name "*.env.dist" -exec rename 's/.env.dist$/.env/' {} \;
 ```
+- run `cert.sh` in nginx service to generate self signed certificate
 - `docker-compose up`
+- run migrations in django containers
 
 Goals
 --
@@ -25,7 +27,7 @@ Todo
 * [x] Setup SSL for development
 * [x] Rename `CMS service` to `Components service` 
 * [ ] Centralized logging 
-* [ ] Move JWT validation to separate, lightweight service to remove shared secret from GraphQL
+* [ ] Move JWT validation to separate, lightweight service to remove shared secret from GraphQL?
 * [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
 * [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
 * [ ] [Create React App, Storybook, Express](https://github.com/gniewomir/django-react-cms/tree/master/services/react)
@@ -38,3 +40,8 @@ Todo
 * [ ] Search service 
 * [ ] Automated build and pushing of images to Amazon ECR
 * [ ] Automated deployment to Amazon ECS
+
+Research 
+--
+
+* How to handle database migrations when deploying scaled containers without taking them all down? 
