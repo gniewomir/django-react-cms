@@ -13,7 +13,7 @@ Goals
 --
 * [ ] Visual page builder allowing fo quick assembling sites/pages from pre-made react components
 * [ ] Fast scaffolding of new services
-* [ ] SSR out of the box 
+* [ ] React+SSR out of the box 
 * [ ] Full front-end tooling out of the box
 * [ ] Easy deployment and scaling 
 
