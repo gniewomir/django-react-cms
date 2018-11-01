@@ -4,7 +4,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.utils import jwt_payload_handler, jwt_decode_handler
 
-from .authorization import get_user_permissions_string_list, get_user_service_permissions_string_list, is_loggedin
+from .authorization import get_user_permissions_string_list, get_user_service_permissions_string_list
 from .models import ElevatedToken, IdentityToken, User
 
 
