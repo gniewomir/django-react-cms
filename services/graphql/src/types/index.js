@@ -2,16 +2,10 @@ const { gql } = require('apollo-server');
 
 types = gql` 
 
-    """
-    Get or create user authorization token
-    """
     type UserIdentity {
         token: String!
     }
     
-    """
-    Get info on currently authorized user
-    """    
     type UserInfo {
         token: String!
         is_loggedin: Boolean
@@ -23,9 +17,6 @@ types = gql`
         last_name: String 
     }
     
-    """
-    Get currently authorized user - available only for JWT authorized requests
-    """    
     type User  {
         identity_token: String!
         elevated_token: String

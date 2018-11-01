@@ -5,7 +5,7 @@ const throwAuthenticationError = (error) => {
     if (error instanceof AuthenticationError) {
         throw error
     }
-    throw AuthenticationError(error);
+    throw new AuthenticationError(error);
 };
 
 const resolvers = {
@@ -33,27 +33,62 @@ const resolvers = {
                 throwAuthenticationError('Invalid authorization method!');
             }
             return dataSources.AccountsService.getCurrentUser();
-
         }
     },
     Mutation: {
-        acceptPrivacyPolicy: (parent, args, {dataSources}) => {
-            return dataSources.AccountsService.update({'accepted_privacy_policy': true});
+        acceptPrivacyPolicy: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.update({'accepted_privacy_policy': true}));
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
         },
-        collectEmail: (parent, args, {dataSources}) => {
-            return dataSources.AccountsService.update(args.input);
+        collectEmail: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.update(args.input));
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
         },
-        registerUser: (parent, args, {dataSources}) => {
-            return dataSources.AccountsService.update(args.input);
+        registerUser: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.update(args.input));
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
         },
-        loginUser: (parent, args, {dataSources}) => {
-            return dataSources.AccountsService.login(args.input);
+        loginUser: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.login(args.input));
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
         },
-        updateUser: (parent, args, {dataSources}) => {
-            return dataSources.AccountsService.update(args.input);
+        updateUser: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.update(args.input));
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
         },
-        logoutUser: (parent, args, {dataSources}) => {
-            return dataSources.AccountsService.logout();
+        logoutUser: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.logout());
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
         },
     }
 };
