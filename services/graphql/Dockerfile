@@ -1,5 +1,24 @@
-FROM node:10.10.0
-WORKDIR /home/node/app
-COPY ./services/graphql/ /home/node/app
+FROM node:10.10.0 as builder
+
+ARG environment
+ARG name
+
+ENV SERVICE=$name
+ENV ENVIRONMENT=$environment
+ENV SOURCE=./services/$SERVICE
+
+COPY $SOURCE/package*.json /build/
+WORKDIR /build
 RUN npm ci
-CMD ["npm", "run", "start"]
+COPY $SOURCE/src/ ./src
+COPY $SOURCE/.env \
+     $SOURCE/docker-entrypoint.sh \
+     ./
+
+FROM node:10.10.0
+
+ENV DESTINATION=./dist
+
+WORKDIR $DESTINATION
+COPY --from=builder ./build/ .
+ENTRYPOINT ["bash", "/dist/docker-entrypoint.sh"]

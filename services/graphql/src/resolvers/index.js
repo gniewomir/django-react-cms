@@ -19,6 +19,16 @@ const resolvers = {
             user.is_loggedin = !!user.elevated_token;
             return user;
         },
+        exchangeToken: async (parent, args, {dataSources}) => {
+            const [error, user] = await to(dataSources.AccountsService.getCurrentUser());
+            if (error) {
+                throwAuthenticationError(error);
+            }
+            console.log(user);
+            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
+            user.is_loggedin = !!user.elevated_token;
+            return user;
+        },
         userInfo: async (parent, args, {dataSources}) => {
             const [error, user] = await to(dataSources.AccountsService.getCurrentUser());
             if (error) {

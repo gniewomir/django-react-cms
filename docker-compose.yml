@@ -3,110 +3,125 @@ version: "3"
 services:
 
   nginx:
-    restart: always
     build:
       context: ./
       dockerfile: ./services/nginx/Dockerfile
       args:
         environment: development
     env_file:
-      - ./services/nginx/.env
-      - ./.env
+    - ./services/nginx/.env
+    - ./.env
     ports:
     - "80:80"
     - "443:443"
     volumes:
     - static:/var/www/static:ro
     depends_on:
-    - components
-    - accounts
+    - graphql
+    - assembler
     networks:
     - front-tier
     - back-tier
 
   graphql:
-    restart: always
     build:
       context: ./
       dockerfile: ./services/graphql/Dockerfile
       args:
         environment: development
+        name: graphql
     env_file:
-      - ./services/graphql/.env
-      - ./secret.env
-      - ./.env
+    - ./services/graphql/.env
+    - ./secret.env
+    - ./.env
     expose:
     - "4000"
+    volumes:
+    - ./services/graphql:/dist
+    depends_on:
+    - accounts
+    - components
     networks:
     - back-tier
 
   accounts:
-    restart: always
     build:
       context: ./
       dockerfile: ./services/accounts/Dockerfile
       args:
         environment: development
+        name: accounts
     expose:
     - "8000"
     volumes:
-    - /home/django/app
-    - static:/home/django/app/static
+    - ./services/accounts:/dist
+    - static:/dist/static
     env_file:
-      - ./services/accounts/.env
-      - ./secret.env
-      - ./.env
+    - ./services/accounts/.env
+    - ./secret.env
+    - ./.env
     depends_on:
     - accounts-postgres
-    - redis
     networks:
     - back-tier
 
   accounts-postgres:
+    restart: always
     image: postgres:10
     container_name: accounts-postgres
     volumes:
-    - "accounts-postgres:/var/lib/postgresql/data"
+    - accounts-postgres:/var/lib/postgresql/data
     networks:
     - back-tier
 
   components:
-    restart: always
     build:
       context: ./
       dockerfile: ./services/components/Dockerfile
       args:
         environment: development
+        name: components
     expose:
     - "8000"
     volumes:
-    - /home/django/app
-    - static:/home/django/app/static
+    - ./services/components:/dist
+    - static:/dist/static
     env_file:
-      - ./services/components/.env
-      - ./secret.env
-      - ./.env
+    - ./services/components/.env
+    - ./secret.env
+    - ./.env
     depends_on:
     - components-postgres
-    - redis
     networks:
     - back-tier
 
   components-postgres:
+    restart: always
     image: postgres:10
     container_name: components-postgres
     volumes:
-    - "components-postgres:/var/lib/postgresql/data"
+    - components-postgres:/var/lib/postgresql/data
     networks:
     - back-tier
 
-  redis:
-    restart: always
-    image: redis:5.0.0-alpine
-    ports:
-    - "6379"
+  assembler:
+    build:
+      context: ./
+      dockerfile: ./services/assembler/Dockerfile
+      args:
+        environment: development
+        name: assembler
     volumes:
-    - redis:/data
+    - ./services/assembler:/dist
+    - static:/dist/static
+    env_file:
+    - ./services/assembler/.env
+    - ./secret.env
+    - ./.env
+    expose:
+    - "3000"
+    depends_on:
+    - graphql
     networks:
     - back-tier
 
@@ -114,7 +129,6 @@ volumes:
   static:
   components-postgres:
   accounts-postgres:
-  redis:
 
 networks:
   front-tier:

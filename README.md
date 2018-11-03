@@ -24,20 +24,25 @@ Todo
 
 * [x] [Accounts service](https://github.com/gniewomir/django-react-cms/tree/master/services/accounts)
 * [x] [GraphQL service](https://github.com/gniewomir/django-react-cms/tree/master/services/graphql)
-* [x] Setup SSL for development
-* [x] Rename `CMS service` to `Components service` 
-* [ ] Centralized logging 
-* [ ] Move JWT validation to separate, lightweight service to remove shared secret from GraphQL?
-* [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
 * [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
-* [ ] [Create React App, Storybook, Express](https://github.com/gniewomir/django-react-cms/tree/master/services/react)
+* [ ] [Create React App, Storybook, Express](https://github.com/gniewomir/django-react-cms/tree/master/services/assembler)
+* [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
+* [x] Setup SSL for development
+* [x] Setup cleaner, properly cached, multi-stage Dockerfiles
+* [x] Sort out log levels to be based on env vars, log only to stdout
 * [ ] Rename project to `Enraged SOA`
-* [ ] Setup Certbot for production
-* [ ] Scrapper service
+* [ ] Centralized logging 
+
 * [ ] Mailer service
 * [ ] Media service
 * [ ] Content service
-* [ ] Search service 
+* [ ] Search service
+* [ ] Scrapper service
+
+* [ ] Move JWT validation to separate, lightweight service to remove shared secret from GraphQL?
+* [ ] Setup Certbot for production 
+* [ ] Non-root processes in containers
+* [ ] Setup production configuration 
 * [ ] Automated build and pushing of images to Amazon ECR
 * [ ] Automated deployment to Amazon ECS
 

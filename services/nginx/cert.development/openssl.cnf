@@ -6,10 +6,10 @@ prompt = no
 
 [req_distinguished_name]
 countryName            = PL
-stateOrProvinceName    =
-localityName           =
-postalCode             =
-streetAddress          =
+stateOrProvinceName    = XX
+localityName           = XX
+postalCode             = XX
+streetAddress          = XX
 organizationName       = Enraged
 organizationalUnitName = Enraged
 commonName             = enraged.local

@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+import logging
 import os
 import sys
+
+if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    logging.disable(logging.CRITICAL)
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.environment.{}".format(os.environ['ENVIRONMENT']))

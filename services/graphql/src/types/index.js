@@ -6,6 +6,10 @@ types = gql`
         token: String!
     }
     
+    type UserBackendIdentity {
+        jwt_token: String!
+    }
+    
     type UserInfo {
         token: String!
         is_loggedin: Boolean
@@ -30,8 +34,13 @@ types = gql`
         last_name: String
     }
     
+    input ExchangeTokenInput {
+        token: String!
+    }
+    
     type Query {
         userIdentity: UserIdentity
+        exchangeToken(input: ExchangeTokenInput): UserBackendIdentity
         userInfo: UserInfo
         user: User
     }
