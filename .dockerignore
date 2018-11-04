@@ -1,4 +1,5 @@
 *.md
 */*/node_modules
 */*/build
+*/*/static
 */*/*.dist

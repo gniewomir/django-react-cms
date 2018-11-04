@@ -16,3 +16,5 @@ openssl req \
 
 certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n cert/$HOST.crt -i cert/$HOST.crt
 certutil -d sql:$HOME/.pki/nssdb -L
+
+find ./cert.development/*.cnf -type f -name 'xa*' -exec sed -i "s/<%HOST%>/$HOST/g" {} \;

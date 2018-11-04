@@ -3,14 +3,15 @@ version: "3"
 services:
 
   nginx:
+    env_file:
+    - ./services/nginx/.env
+    - .env
     build:
       context: ./
       dockerfile: ./services/nginx/Dockerfile
       args:
         environment: development
-    env_file:
-    - ./services/nginx/.env
-    - ./.env
+        host: $HOST
     ports:
     - "80:80"
     - "443:443"
@@ -113,6 +114,8 @@ services:
         name: assembler
     volumes:
     - ./services/assembler:/dist
+    - assembler-dependencies:/dist/node_modules
+    - assembler-build:/dist/build
     - static:/dist/static
     env_file:
     - ./services/assembler/.env
@@ -127,6 +130,8 @@ services:
 
 volumes:
   static:
+  assembler-build:
+  assembler-dependencies:
   components-postgres:
   accounts-postgres:
 
