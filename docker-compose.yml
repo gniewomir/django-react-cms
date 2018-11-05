@@ -15,6 +15,7 @@ services:
     ports:
     - "80:80"
     - "443:443"
+    - "4444:4444"
     volumes:
     - static:/var/www/static:ro
     depends_on:
@@ -39,6 +40,7 @@ services:
     - "4000"
     volumes:
     - ./services/graphql:/dist
+    - graphql-dependencies:/dist/node_modules
     depends_on:
     - accounts
     - components
@@ -122,7 +124,8 @@ services:
     - ./secret.env
     - ./.env
     expose:
-    - "3000"
+    - "4443"
+    - "4444"
     depends_on:
     - graphql
     networks:
@@ -130,6 +133,7 @@ services:
 
 volumes:
   static:
+  graphql-dependencies:
   assembler-build:
   assembler-dependencies:
   components-postgres:
