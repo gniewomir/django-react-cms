@@ -13,7 +13,7 @@ export const createAuthorizationMiddleware = () => {
                 authorization: req.header('authorization') || req.cookies.authorization
             } : {};
             if (headers.authorization && headers.authorization.substring(0, 5) !== 'Token') {
-                res.status(401).send('Wrong authentication method!')
+                res.status(401).send('Wrong authentication token!')
             }
             const client = new ApolloClient({
                 ssrMode: true,
@@ -25,6 +25,11 @@ export const createAuthorizationMiddleware = () => {
                 }),
                 cache: new InMemoryCache(),
             });
+            /**
+             * TODO: Exchange token for JWT
+             * TODO: Create new client instance authorized with JWT
+             * TODO: Pass new instance to renderer middleware via res.locals
+             */
             const user = await client.query({
                 query: gql`
                     query {
