@@ -18,6 +18,7 @@ const createUser = async () => {
         }
     }
     return {
+        created: true,
         user: json,
         token: json.identity_token,
         auth: `Token ${json.identity_token}`,

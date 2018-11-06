@@ -45,6 +45,10 @@ types = gql`
         user: User
     }
     
+    input AcceptPrivacyPolicy {
+        accepted_privacy_policy: Boolean!
+    }
+    
     input CollectEmailInput {
         email: String!
     }
@@ -72,7 +76,7 @@ types = gql`
     }
     
     type Mutation {
-        acceptPrivacyPolicy: UserInfo
+        acceptPrivacyPolicy(input: AcceptPrivacyPolicy): UserInfo
         collectEmail(input: CollectEmailInput): UserInfo
         registerUser(input: RegisterUserInput): UserInfo
         loginUser(input: LoginUserInput): UserInfo

@@ -11,16 +11,8 @@ module.exports = class AccountsService extends RESTDataSource {
         request.headers.set('authorization', this.context.auth);
     }
 
-    createUser() {
-        return this.post('user/')
-    }
-
     getCurrentUser() {
         return this.get(`user/${this.context.user.identity_token}/`)
-    }
-
-    getUserByUUID(uuid) {
-        return this.get(`user/${uuid}/`)
     }
 
     update(args) {

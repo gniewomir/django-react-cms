@@ -8,97 +8,76 @@ const throwAuthenticationError = (error) => {
     throw new AuthenticationError(error);
 };
 
+const getCurrentUser = async (parent, args, {dataSources, user, token}) => {
+    const [error, freshUser] = await to(dataSources.AccountsService.getCurrentUser());
+    if (error) {
+        throwAuthenticationError(error);
+    }
+    freshUser.token = token;
+    freshUser.is_loggedin = token && token === user.elevated_token;
+    return freshUser;
+};
+
+const getUpdatedUser = (user, token) => {
+    user.token = token;
+    user.is_loggedin = token && token === user.elevated_token;
+    return user;
+}
+
 const resolvers = {
     Query: {
-        userIdentity: async (parent, args, {dataSources}) => {
-            const [error, user] = await to(dataSources.AccountsService.getCurrentUser());
-            if (error) {
-                throwAuthenticationError(error);
-            }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
-        },
-        exchangeToken: async (parent, args, {dataSources}) => {
-            const [error, user] = await to(dataSources.AccountsService.getCurrentUser());
-            if (error) {
-                throwAuthenticationError(error);
-            }
-            console.log(user);
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
-        },
-        userInfo: async (parent, args, {dataSources}) => {
-            const [error, user] = await to(dataSources.AccountsService.getCurrentUser());
-            if (error) {
-                throwAuthenticationError(error);
-            }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
-        },
-        user: (parent, args, {dataSources, auth_method}) => {
+        userIdentity: getCurrentUser,
+        exchangeToken: getCurrentUser,
+        userInfo: getCurrentUser,
+        user: (parent, args, {dataSources, token, auth_method}) => {
             if (auth_method !== 'jwt') {
                 throwAuthenticationError('Invalid authorization method!');
             }
-            return dataSources.AccountsService.getCurrentUser();
+            return getCurrentUser(parent, args, {dataSources, token});
         }
     },
     Mutation: {
-        acceptPrivacyPolicy: async (parent, args, {dataSources}) => {
-            const [error, user] = await to(dataSources.AccountsService.update({'accepted_privacy_policy': true}));
+        acceptPrivacyPolicy: async (parent, args, {dataSources, token}) => {
+            const [error, user] = await to(dataSources.AccountsService.update({"accepted_privacy_policy": true}));
             if (error) {
                 throwAuthenticationError(error);
             }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
+            return getUpdatedUser(user, token);
         },
-        collectEmail: async (parent, args, {dataSources}) => {
+        collectEmail: async (parent, args, {dataSources, token}) => {
             const [error, user] = await to(dataSources.AccountsService.update(args.input));
             if (error) {
                 throwAuthenticationError(error);
             }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
+            return getUpdatedUser(user, token);
         },
-        registerUser: async (parent, args, {dataSources}) => {
+        registerUser: async (parent, args, {dataSources, token}) => {
             const [error, user] = await to(dataSources.AccountsService.update(args.input));
             if (error) {
                 throwAuthenticationError(error);
             }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
+            return getUpdatedUser(user, token);
         },
-        loginUser: async (parent, args, {dataSources}) => {
+        loginUser: async (parent, args, {dataSources, token}) => {
             const [error, user] = await to(dataSources.AccountsService.login(args.input));
             if (error) {
                 throwAuthenticationError(error);
             }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
+            return getUpdatedUser(user, token);
         },
-        updateUser: async (parent, args, {dataSources}) => {
+        updateUser: async (parent, args, {dataSources, token}) => {
             const [error, user] = await to(dataSources.AccountsService.update(args.input));
             if (error) {
                 throwAuthenticationError(error);
             }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
+            return getUpdatedUser(user, token);
         },
-        logoutUser: async (parent, args, {dataSources}) => {
+        logoutUser: async (parent, args, {dataSources, token}) => {
             const [error, user] = await to(dataSources.AccountsService.logout());
             if (error) {
                 throwAuthenticationError(error);
             }
-            user.token = user.elevated_token ? user.elevated_token : user.identity_token;
-            user.is_loggedin = !!user.elevated_token;
-            return user;
+            return getUpdatedUser(user, token);
         },
     }
 };
