@@ -25,7 +25,9 @@ Todo
 * [x] [Accounts service](https://github.com/gniewomir/django-react-cms/tree/master/services/accounts)
 * [x] [GraphQL service](https://github.com/gniewomir/django-react-cms/tree/master/services/graphql)
 * [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
-* [ ] [Create React App, Storybook, Express](https://github.com/gniewomir/django-react-cms/tree/master/services/assembler)
+* [ ] [Express+Razzle](https://github.com/gniewomir/django-react-cms/tree/master/services/assembler)
+* [ ] Setup shared component repository
+* [ ] Setup Storybook service or [styleguidist?](https://github.com/styleguidist/react-styleguidist)  
 * [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
 * [x] Setup SSL for development
 * [x] Setup cleaner, properly cached, multi-stage Dockerfiles
@@ -43,6 +45,7 @@ Todo
 * [ ] Setup Certbot for production 
 * [ ] Non-root processes in containers
 * [ ] Setup production configuration 
+* [ ] Secure Django admin sites 
 * [ ] Automated build and pushing of images to Amazon ECR
 * [ ] Automated deployment to Amazon ECS
 

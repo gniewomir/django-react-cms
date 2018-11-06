@@ -16,6 +16,7 @@ Todo
 * [x] Setup services permissions 
 * [x] Setup JWT authentication
 * [ ] Setup SOA JWT tokens
+* [ ] Block access to users by UUID if not authenticated via JWT
 * [ ] Add tests ensuring `none` encoding is not accepted when verifying JWT 
 * [ ] Setup changing password 
 * [ ] Setup token expiration
