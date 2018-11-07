@@ -23,6 +23,6 @@ TODO
 --
 
 * [ ] Secure Express with [Helmet](https://github.com/helmetjs/helmet)
-* [ ] Sign cookies?
+* [ ] Sign cookies - so hijacked/leaked token wont be enough to perform action on behalf of user   
 * [ ] Introduce analytics_token which identifies user, but cannot be used to authenticate/authorize user
  

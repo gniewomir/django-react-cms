@@ -5,8 +5,16 @@ import React from 'react';
 export default () => (
     <Query query={gql`
                     query {
-                      userIdentity {
-                        token
+                      user {
+                            identity_token
+                            elevated_token
+                            is_registered
+                            accepted_privacy_policy
+                            accepted_terms_of_service
+                            username
+                            email
+                            first_name
+                            last_name
                       }
                     }
            `}

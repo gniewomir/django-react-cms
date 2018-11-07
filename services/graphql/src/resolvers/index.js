@@ -27,14 +27,14 @@ const getUpdatedUser = (user, token) => {
 const resolvers = {
     Query: {
         userIdentity: getCurrentUser,
-        exchangeToken: getCurrentUser,
-        userInfo: getCurrentUser,
-        user: (parent, args, {dataSources, token, auth_method}) => {
+        exchangeToken: async (parent, args, {dataSources, user, token, auth_method}) => {
             if (auth_method !== 'jwt') {
-                throwAuthenticationError('Invalid authorization method!');
+                throwAuthenticationError('Wrong authentication method for this query!');
             }
-            return getCurrentUser(parent, args, {dataSources, token});
-        }
+            return getCurrentUser(parent, args, {dataSources, user, token})
+        },
+        userInfo: getCurrentUser,
+        user: getCurrentUser
     },
     Mutation: {
         acceptPrivacyPolicy: async (parent, args, {dataSources, token}) => {

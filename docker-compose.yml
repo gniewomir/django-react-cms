@@ -39,8 +39,7 @@ services:
     expose:
     - "4000"
     volumes:
-    - ./services/graphql:/dist
-    - graphql-dependencies:/dist/node_modules
+    - ./services/graphql/src:/dist/src
     depends_on:
     - accounts
     - components
@@ -131,7 +130,6 @@ services:
 
 volumes:
   static:
-  graphql-dependencies:
   components-postgres:
   accounts-postgres:
 

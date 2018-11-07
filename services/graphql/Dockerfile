@@ -13,6 +13,7 @@ RUN npm ci
 COPY $SOURCE/src/ ./src
 COPY $SOURCE/.env \
      $SOURCE/docker-entrypoint.sh \
+     $SOURCE/index.js \
      ./
 
 FROM node:10.10.0

@@ -24,7 +24,6 @@ types = gql`
     type User  {
         identity_token: String!
         elevated_token: String
-        jwt_token: String
         is_registered: Boolean
         accepted_privacy_policy: Boolean
         accepted_terms_of_service: Boolean
