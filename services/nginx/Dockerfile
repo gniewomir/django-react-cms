@@ -6,14 +6,15 @@ ARG host
 ENV ENVIRONMENT=$environment
 ENV HOST=$host
 
+RUN apk update \
+    && apk add findutils \
+    && apk add sed
+
 WORKDIR /build
 ADD ./services/nginx/cert.$ENVIRONMENT/ ./cert
 ADD ./services/nginx/nginx.conf ./nginx.conf
 ADD ./services/nginx/conf.d.$ENVIRONMENT/ ./conf.d
-RUN apk update \
-    && apk add findutils \
-    && apk add sed \
-    && find /build/conf.d/* -type f -exec sed -i "s/<%HOST%>/$HOST/g" {} \;
+RUN find /build/conf.d/* -type f -exec sed -i "s/<%HOST%>/$HOST/g" {} \;
 
 FROM nginx:1.15.5-alpine
 
