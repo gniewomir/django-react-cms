@@ -1,46 +1,15 @@
-import {renderToString} from "react-dom/server";
-import {StaticRouter} from "react-router-dom";
-import App from "../../App/App";
 import React from "react";
-
-import assets from '../../../build/assets.json';
+import Server from '../../scene/Server';
+import document from '../../scene/Document';
 
 export const createRendererMiddleware = () => {
-    return (req, res, next) => {
-        const context = {};
-        const markup = renderToString(
-            <StaticRouter context={context} location={req.url}>
-                <App/>
-            </StaticRouter>
-        );
-
-        if (context.url) {
-            res.redirect(context.url);
-        } else {
-            res.status(200).send(
-                `<!doctype html>
-    <html lang="">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta charset="utf-8" />
-        <title>Welcome to Razzle</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        ${
-                    assets.client.css
-                        ? `<link rel="stylesheet" href="${assets.client.css}">`
-                        : ''
-                    }
-        ${
-                    process.env.NODE_ENV === 'production'
-                        ? `<script src="${assets.client.js}" defer></script>`
-                        : `<script src="${assets.client.js}" defer crossorigin></script>`
-                    }
-    </head>
-    <body>
-        <div id="root">${markup}</div>
-    </body>
-</html>`
-            );
-        }
+    return async (req, res, next) => {
+        const context = {
+            client: res.locals.client
+        };
+        const response = await document(Server(context, req.url), context);
+        res.status(200);
+        res.send(response);
+        res.end()
     }
 };

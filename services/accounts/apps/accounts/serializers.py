@@ -34,11 +34,9 @@ class UserSerializer(ModelSerializer):
     def get_jwt_token(self, instance):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        try:
+        if is_loggedin(self.context['request']):
             return jwt_encode_handler(jwt_payload_handler(instance, ElevatedToken.objects.get(user=instance).key))
-        except ElevatedToken.DoesNotExist:
-            return jwt_encode_handler(jwt_payload_handler(instance, None))
-
+        return jwt_encode_handler(jwt_payload_handler(instance, None))
 
     @staticmethod
     def get_user_permissions(instance):

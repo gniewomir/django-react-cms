@@ -22,7 +22,7 @@ const getUpdatedUser = (user, token) => {
     user.token = token;
     user.is_loggedin = token && token === user.elevated_token;
     return user;
-}
+};
 
 const resolvers = {
     Query: {
@@ -72,12 +72,12 @@ const resolvers = {
             }
             return getUpdatedUser(user, token);
         },
-        logoutUser: async (parent, args, {dataSources, token}) => {
+        logoutUser: async (parent, args, {dataSources}) => {
             const [error, user] = await to(dataSources.AccountsService.logout());
             if (error) {
                 throwAuthenticationError(error);
             }
-            return getUpdatedUser(user, token);
+            return getUpdatedUser(user, user.identity_token);
         },
     }
 };

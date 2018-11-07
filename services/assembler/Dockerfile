@@ -14,6 +14,7 @@ RUN npm ci
 
 COPY $SOURCE/public/ ./public
 COPY $SOURCE/.env \
+     $SOURCE/razzle.config.js \
      $SOURCE/docker-entrypoint.sh \
      ./
 COPY $SOURCE/src/ ./src

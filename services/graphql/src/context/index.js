@@ -21,6 +21,7 @@ const createUser = async () => {
         created: true,
         user: json,
         token: json.identity_token,
+        jwt_auth: `Bearer ${json.jwt_token}`,
         auth: `Token ${json.identity_token}`,
         auth_method: `token`
     };
@@ -50,6 +51,7 @@ const getUser = async (token) => {
     return {
         user: json,
         token: token,
+        jwt_auth: `Bearer ${json.jwt_token}`,
         auth: `Token ${token}`,
         auth_method: `token`
     };
@@ -67,6 +69,7 @@ const checkUserToken = (token) => {
     return {
         user,
         token,
+        jwt_auth: `Bearer ${token}`,
         auth: `Bearer ${token}`,
         auth_method: `jwt`
     }

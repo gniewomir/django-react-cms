@@ -8,7 +8,7 @@ module.exports = class AccountsService extends RESTDataSource {
     }
 
     willSendRequest(request) {
-        request.headers.set('authorization', this.context.auth);
+        request.headers.set('authorization', this.context.jwt_auth);
     }
 
     getCurrentUser() {

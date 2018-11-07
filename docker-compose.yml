@@ -115,9 +115,7 @@ services:
         environment: development
         name: assembler
     volumes:
-    - ./services/assembler:/dist
-    - assembler-dependencies:/dist/node_modules
-    - assembler-build:/dist/build
+    - ./services/assembler/src:/dist/src
     - static:/dist/static
     env_file:
     - ./services/assembler/.env
@@ -134,8 +132,6 @@ services:
 volumes:
   static:
   graphql-dependencies:
-  assembler-build:
-  assembler-dependencies:
   components-postgres:
   accounts-postgres:
 
