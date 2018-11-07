@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import ComponentInstance, ComponentType, Scene
+from ..models import ComponentInstance, ComponentType
 
 
 class ComponentTest(APITestCase):
@@ -10,7 +10,6 @@ class ComponentTest(APITestCase):
     def setUp(self):
         self.type = ComponentType.objects.create(react_name='Body', name='Body')
         self.instance = ComponentInstance.objects.create(type=self.type, name='Base site body')
-        self.scene = Scene.objects.create(root_component=self.instance, name='Homepage')
 
     def test_retrieve_is_not_smoking(self):
         self.assertEqual(status.HTTP_200_OK, self.client.get(reverse('component-single', args=(self.instance.id,)),

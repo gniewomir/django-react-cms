@@ -12,4 +12,4 @@ class SiteSerializer(ModelSerializer):
 class RouteSerializer(ModelSerializer):
     class Meta:
         model = Route
-        fields = ('id', 'route', 'site', 'scene')
+        fields = ('id', 'route', 'site', 'component')

@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
-from .models import ComponentInstance, ComponentType, Scene
-from .serializers import ComponentInstanceSerializer, ComponentTypeSerializer, SceneSerializer
+from .models import ComponentInstance, ComponentType
+from .serializers import ComponentInstanceSerializer, ComponentTypeSerializer
 
 
 class TypeView(ModelViewSet):
@@ -12,8 +12,3 @@ class TypeView(ModelViewSet):
 class ComponentView(ModelViewSet):
     serializer_class = ComponentInstanceSerializer
     queryset = ComponentInstance.objects.all()
-
-
-class SceneView(ModelViewSet):
-    serializer_class = SceneSerializer
-    queryset = Scene.objects.all()

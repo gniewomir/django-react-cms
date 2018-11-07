@@ -45,21 +45,3 @@ class ComponentInstance(AbstractComponentInstance):
     class Meta:
         verbose_name = 'Component instance'
         verbose_name_plural = 'Component instances'
-
-
-class AbstractScene(models.Model):
-    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=120)
-    root_component = models.ForeignKey(ComponentInstance, blank=True, null=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        abstract = True
-
-
-class Scene(AbstractScene):
-    class Meta:
-        verbose_name = 'Scene'
-        verbose_name_plural = 'Scenes'

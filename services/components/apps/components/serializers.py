@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from .models import ComponentInstance, ComponentType, Scene
+from .models import ComponentInstance, ComponentType
 
 
 class ComponentInstanceSerializer(ModelSerializer):
@@ -14,8 +14,3 @@ class ComponentTypeSerializer(ModelSerializer):
         model = ComponentType
         fields = ('id', 'react_name', 'allowed_children_types', 'name')
 
-
-class SceneSerializer(ModelSerializer):
-    class Meta:
-        model = Scene
-        fields = ('id', 'root_component', 'name')
