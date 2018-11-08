@@ -5,7 +5,7 @@ Development setup
 - Project uses symlinks to shared code
 - Developed and tested only under Ubuntu 16.04 & 18.04
 
-####Setup
+########Setup
 
 - rename all `.env.dist` files to `.env` 
 - run `cert.development.sh` in nginx service to generate self signed certificate
@@ -25,7 +25,7 @@ Todo
 
 * [ ] Rename project to `Enraged SOA`
 
-####Services
+######Services
 * [x] [Accounts service](https://github.com/gniewomir/django-react-cms/tree/master/services/accounts)
 * [x] [GraphQL service](https://github.com/gniewomir/django-react-cms/tree/master/services/graphql)
 * [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
@@ -39,12 +39,12 @@ Todo
 * [ ] Search service
 * [ ] Scrapper service  
 
-####Maintenance/reliability/debugging
+######Maintenance/reliability/debugging
 * [ ] Sort out log levels to be based on env vars, log only to stdout
 * [ ] Setup consistent logging format across project 
 * [ ] Centralized logging 
 
-####Security
+######Security
 * [x] Setup SSL for development, to make dev and production environments as close as possible
 * [x] Http only, secure cookies for fronted
 * [X] JWT only for internal use 
@@ -53,7 +53,7 @@ Todo
 * [ ] Setup production configurations 
 * [ ] Secure Django admin sites 
 
-####Deployment
+######Deployment
 * [x] Setup cleaner, properly cached, multi-stage Dockerfiles
 * [ ] Automated build and pushing of images to Amazon ECR
 * [ ] Automated deployment to Amazon ECS
