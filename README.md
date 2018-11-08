@@ -14,11 +14,13 @@ Development setup
 
 Goals
 --
-* [ ] Visual page builder allowing fo quick assembling sites/pages from pre-made react components
+* [ ] Automatic import of new component types from JSON manifests
+* [ ] Visual page builder allowing assembling sites/pages from pre-made react components
 * [ ] Fast scaffolding of new services
-* [ ] React+SSR out of the box 
+* [ ] SSR out of the box 
 * [ ] Full front-end tooling out of the box
 * [ ] Easy deployment and scaling 
+* [ ] Easy to maintain and extend
 
 Todo
 --
