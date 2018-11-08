@@ -1,14 +1,14 @@
 Setup 
 --
-For development: 
+For development run before building project: 
 ```
-$ bash cert.sh
+$ bash cert.development.sh
 ```
 
 Todo
 --
 
-* [ ] Distinguish development and production environment configs
+* [x] Distinguish development and production environment configs
 * [x] Setup ssl for development
 * [ ] Setup certbot for production 
 

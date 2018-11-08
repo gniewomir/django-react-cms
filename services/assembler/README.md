@@ -22,6 +22,8 @@ AUTHENTICATION/AUTHORIZATION
 TODO
 --
 
+* [ ] Setup /login and /register endpoints to remove ugly `/update-cookie` hack 
+* [ ] Hookup routing based on components service list of routes 
 * [ ] Secure Express with [Helmet](https://github.com/helmetjs/helmet)
 * [ ] Sign cookies - so hijacked/leaked token wont be enough to perform action on behalf of user   
 * [ ] Introduce analytics_token which identifies user, but cannot be used to authenticate/authorize user

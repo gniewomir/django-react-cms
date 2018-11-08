@@ -1,5 +1,3 @@
 ## Todo
-- [x] Basic setup
-- [x] Base component setup
-- [x] Base routing setup
-- [ ] Base permissions setup
+* [ ] Setup component types fields 
+* [ ] Setup component types automated importing from JSON files 
