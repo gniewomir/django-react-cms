@@ -1,7 +1,7 @@
 AUTHENTICATION/AUTHORIZATION
 --
 
-######Rules
+*Rules*
 * this service do not recognize or accept JWT tokens
 * authorization header takes precedence over authorization cookie, 
   but can be used only to updated authorization cookie
@@ -11,7 +11,7 @@ AUTHENTICATION/AUTHORIZATION
 * tokens should not be used to identify user for analytics purposes, 
   for analytics purposes there will be introduced special kind of token analytics_token
 
-######Flow
+*Flow*
 * Every user automatically receives cookie with his identity_token if he doesnt have one,
   this happens with any request that hits authorization middleware
 * If registered user wants to log in, he have to obtain elevated_token by performing login mutation,
