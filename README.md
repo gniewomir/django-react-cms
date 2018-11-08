@@ -29,8 +29,8 @@ Todo
 * [x] [Accounts service](https://github.com/gniewomir/django-react-cms/tree/master/services/accounts)
 * [x] [GraphQL service](https://github.com/gniewomir/django-react-cms/tree/master/services/graphql)
 * [x] [Web server](https://github.com/gniewomir/django-react-cms/tree/master/services/nginx)
-* [ ] [Components service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
-* [ ] [Express+Razzle](https://github.com/gniewomir/django-react-cms/tree/master/services/assembler)
+* [ ] [Express+Razzle+React+Apollo](https://github.com/gniewomir/django-react-cms/tree/master/services/assembler)
+* [ ] [Components/Routing service](https://github.com/gniewomir/django-react-cms/tree/master/services/cms)
 * [ ] Setup shared component repository
 * [ ] Setup Storybook service or [styleguidist?](https://github.com/styleguidist/react-styleguidist)
 * [ ] Mailer service
