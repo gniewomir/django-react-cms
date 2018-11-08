@@ -4,7 +4,6 @@ from datetime import datetime
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer, UUIDField, CharField, ListField, SerializerMethodField, BooleanField, \
     Field
-from rest_framework_jwt.settings import api_settings
 
 
 class TimestampField(Field):
@@ -22,6 +21,7 @@ class AbstractJwtSerializer(Serializer):
     is_service = SerializerMethodField()
 
     def get_exp(self, obj):
+        from rest_framework_jwt.settings import api_settings
         if 'exp' in obj:
             return obj['exp']
         return datetime.utcnow() + api_settings.JWT_EXPIRATION_DELTA
@@ -58,12 +58,15 @@ class CreateServiceJwtSerializer(AbstractJwtSerializer):
         return True
 
     def get_service_name(self, obj):
-        if not os.environ.get('NAME'):
+        if not os.environ.get('SERVICE_NAME'):
             raise ValidationError('Unknown service name!')
-        return os.environ.get('NAME')
+        return os.environ.get('SERVICE_NAME')
 
     def get_service_permissions(self, obj):
-        return []
+        if not os.environ.get('SERVICE_PERMISSIONS'):
+            raise ValidationError('Unknown service permissions!')
+        return list(
+            map(lambda permission: permission.strip(' \t\n\r'), os.environ.get('SERVICE_PERMISSIONS').split(',')))
 
 
 class ValidateServiceJwtSerializer(AbstractJwtSerializer):

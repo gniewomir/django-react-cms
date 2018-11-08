@@ -1,6 +1,13 @@
 import os
 import sys
 
+from lib.authentication.settings import JWT_AUTH
+from lib.authentication.settings import REST_FRAMEWORK
+
+# make sure auto formatting won't remove imports
+JWT_AUTH = JWT_AUTH
+REST_FRAMEWORK = REST_FRAMEWORK
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SECRET_KEY = os.environ['SECRET_KEY']
@@ -11,7 +18,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console':{
+        'console': {
             'level': os.environ['LOG_LEVEL'],
             'class': 'logging.StreamHandler',
             'stream': sys.stdout
@@ -49,12 +56,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -111,4 +112,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static', os.getenv('SERVICE_NAME'))
-

@@ -92,7 +92,7 @@ services:
     - ./services/components/apps:/dist/apps
     - ./services/components/settings:/dist/settings
     - ./services/components/tests:/dist/tests
-    - ./shared/django/:/dist/lib
+    - ./services/components/lib:/dist/lib
     - static:/dist/static
     env_file:
     - ./services/components/.env

@@ -5,6 +5,8 @@ import sys
 
 if len(sys.argv) > 1 and sys.argv[1] == 'test':
     logging.disable(logging.CRITICAL)
+    os.environ["ENVIRONMENT"] = "testing"
+    os.environ["SECRET_KEY"] = "testing-not-so-secret-key"
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.environment.{}".format(os.environ['ENVIRONMENT']))
@@ -17,3 +19,4 @@ if __name__ == "__main__":
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+
