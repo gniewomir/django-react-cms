@@ -8,7 +8,7 @@ from .authorization import get_user_permissions_string_list, get_user_service_pe
 from .models import ElevatedToken, IdentityToken, User
 
 
-def accounts_jwt_payload_handler(user, elevated_token=None):
+def user_jwt_payload_handler(user, elevated_token=None):
     payload = jwt_payload_handler(user)
     payload.pop('username')
     payload.pop('email')
