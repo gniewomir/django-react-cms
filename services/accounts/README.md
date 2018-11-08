@@ -15,6 +15,7 @@ Todo
 * [x] Setup selecting user by token, not only uuid
 * [x] Setup services permissions 
 * [x] Setup JWT authentication
+* [ ] Automatically register services
 * [ ] Setup SOA JWT tokens
 * [ ] Block access to users by UUID if not authenticated via JWT
 * [ ] Add tests ensuring `none` encoding is not accepted when verifying JWT 
