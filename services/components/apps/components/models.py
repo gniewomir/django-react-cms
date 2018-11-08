@@ -5,17 +5,13 @@ from django.db import models
 
 class AbstractComponentType(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    react_name = models.CharField(max_length=120)
-    allowed_children_types = models.ManyToManyField('self', blank=True,
-                                                    symmetrical=False,
-                                                    help_text='Component types that are allowed to be children of this component')
+    name = models.CharField(max_length=120, unique=True, blank=False, null=False)
 
     class Meta:
         abstract = True
 
 
 class ComponentType(AbstractComponentType):
-    name = models.CharField(max_length=120)
 
     def __str__(self):
         return self.name
@@ -28,19 +24,18 @@ class ComponentType(AbstractComponentType):
 class AbstractComponentInstance(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     type = models.ForeignKey(ComponentType, on_delete=models.CASCADE)
-    children = models.ManyToManyField('self', blank=True,
-                                      symmetrical=False,
-                                      help_text='Component types that are allowed to be children of this component.')
 
     class Meta:
         abstract = True
 
 
 class ComponentInstance(AbstractComponentInstance):
-    name = models.CharField(max_length=120)
+    name = models.CharField(max_length=120, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return '{}:{}'.format(self.type.name, self.name)
+        return self.name or '{}:{}'.format(self.type.name, self.id)
 
     class Meta:
         verbose_name = 'Component instance'

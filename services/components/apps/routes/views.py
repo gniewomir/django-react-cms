@@ -17,20 +17,19 @@ class RouteView(ModelViewSet):
     serializer_class = RouteSerializer
     queryset = Route.objects.all()
 
-    def get_object(self):
-        return super().get_object()
-
     def retrieve(self, request, *args, **kwargs):
         if 'pk' in kwargs:
             return Response(self.get_serializer(self.get_object()).data)
         try:
             site = Site.objects.get(domain=kwargs['domain'])
         except Site.DoesNotExist:
-            raise NotFound(detail='Unknown site domain.')
-        routes = self.get_queryset().filter(site=site)
-        if not routes.count():
-            raise NotFound(detail='Site do not have any routes.')
-        for single_route in routes:
+            raise NotFound(detail='Unknown domain.')
+        if 'path' not in kwargs:
+            try:
+                return Response(self.get_serializer(Route.objects.get(route='/')).data)
+            except Route.DoesNotExist:
+                raise NotFound(detail='No matching route.')
+        for single_route in self.get_queryset().filter(site=site):
             if re.match(r'^{}/?$'.format(single_route.route.replace('<slug>', r'([\w-]+)').strip().rstrip('/')),
                         kwargs['path']):
                 return Response(self.get_serializer(single_route).data)
