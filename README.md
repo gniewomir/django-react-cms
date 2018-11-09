@@ -19,6 +19,7 @@ Goals
 * [ ] Fast scaffolding of new services
 * [ ] SSR out of the box 
 * [ ] Full front-end tooling out of the box
+* [ ] Integrated user tracking and analitycs
 * [ ] Easy deployment and scaling 
 * [ ] Easy to maintain and extend
 
