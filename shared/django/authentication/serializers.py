@@ -33,12 +33,8 @@ class AbstractJwtSerializer(Serializer):
         return False
 
 
-# TODO actually use it in Accounts service
 class UserJwtSerializer(AbstractJwtSerializer):
     user_uuid = UUIDField(source='user_id')
-    identity_token = CharField(max_length=40)
-    elevated_token = CharField(max_length=40)
-    user_permissions = ListField(child=CharField(max_length=120))
     service_permissions = ListField(child=CharField(max_length=120))
     is_loggedin = SerializerMethodField()
 
@@ -48,6 +44,18 @@ class UserJwtSerializer(AbstractJwtSerializer):
     @staticmethod
     def get_is_loggedin(obj):
         return obj.identity_token and obj.elevated_token
+
+    def get_service_permissions(self):
+        return [
+            'accounts',
+            'accounts:User:POST',
+            'accounts:User:PATCH',
+            'accounts:User:GET',
+            'accounts:User:DELETE',
+            'components',
+            'components:Route:GET',
+            'components:ComponentInstance:GET'
+        ]
 
 
 class CreateServiceJwtSerializer(AbstractJwtSerializer):

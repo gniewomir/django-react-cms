@@ -20,7 +20,7 @@ def user_jwt_payload_handler(user, elevated_token=None):
 
     payload['elevated_token'] = elevated_token
     payload['user_permissions'] = get_user_permissions_string_list(user)
-    payload['service_permissions'] = get_user_service_permissions_string_list(user)
+   # payload['service_permissions'] = get_user_service_permissions_string_list(user)
     return payload
 
 

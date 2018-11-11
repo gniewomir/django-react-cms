@@ -7,8 +7,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from ..services.models import ServicePermission
-
 
 class IdentityToken(models.Model):
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
@@ -70,11 +68,3 @@ class User(AbstractUser):
                                         help_text='User was registered')
     date_registered = models.DateTimeField(default=None, null=True, editable=False)
     date_login = models.DateTimeField(default=None, null=True, editable=False)
-    service_permissions = models.ManyToManyField(
-        ServicePermission,
-        verbose_name=_('Service permissions'),
-        blank=True,
-        help_text=_('Service permissions for this user.'),
-        related_name="user_set",
-        related_query_name="user",
-    )

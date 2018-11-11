@@ -14,7 +14,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('services', '0001_initial'),
         ('auth', '0009_alter_user_last_name_max_length'),
     ]
 
@@ -39,7 +38,6 @@ class Migration(migrations.Migration):
                 ('date_registered', models.DateTimeField(default=None, editable=False, null=True)),
                 ('date_login', models.DateTimeField(default=None, editable=False, null=True)),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
-                ('service_permissions', models.ManyToManyField(blank=True, help_text='Service permissions for this user.', related_name='user_set', related_query_name='user', to='services.ServicePermission', verbose_name='Service permissions')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
             ],
             options={

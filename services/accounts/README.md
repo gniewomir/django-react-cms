@@ -13,7 +13,6 @@ Todo
 * [x] Setup token authentication with login and registration
 * [x] Setup ownership permissions
 * [x] Setup selecting user by token, not only uuid
-* [x] Setup services permissions 
 * [x] Setup JWT authentication
 * [ ] Hookup shared service authorization to accounts 
 * [ ] Setup shared user authorization 

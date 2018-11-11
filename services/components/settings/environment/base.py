@@ -3,35 +3,18 @@ import sys
 
 from lib.authentication.settings import JWT_AUTH
 from lib.authentication.settings import REST_FRAMEWORK
+from lib.logging.settings import LOGGING
 
 # make sure auto formatting won't remove imports
 JWT_AUTH = JWT_AUTH
 REST_FRAMEWORK = REST_FRAMEWORK
+LOGGING = LOGGING
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = os.getenv('DEBUG', 'false')
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': os.environ['LOG_LEVEL'],
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.environ['LOG_LEVEL'],
-            'propagate': True,
-        },
-    },
-}
 
 ALLOWED_HOSTS = ['*']
 

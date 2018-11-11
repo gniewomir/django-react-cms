@@ -19,7 +19,7 @@ Goals
 * [ ] Fast scaffolding of new services
 * [ ] SSR out of the box 
 * [ ] Full front-end tooling out of the box
-* [ ] Integrated user tracking and analitycs
+* [ ] Integrated user tracking and analytics
 * [ ] Easy deployment and scaling 
 * [ ] Easy to maintain and extend
 
@@ -50,8 +50,9 @@ Todo
 *Security*
 * [x] Setup SSL for development, to make dev and production environments as close as possible
 * [x] Http only, secure cookies for fronted
-* [X] JWT only for internal use 
-* [ ] Setup services authentication & permissions on backend
+* [X] JWT only for internal use
+* [ ] Setup services authentication & permissions on backend 
+* [ ] Switch JTW auth from HMAC to RSA or ECDSA 
 * [ ] Non-root processes in containers
 * [ ] Setup production configurations 
 * [ ] Secure Django admin sites 

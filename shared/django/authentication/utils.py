@@ -68,7 +68,7 @@ def get_service_name():
 
 
 def get_service_permission(model=None, method=None):
-    permission = [get_service_name(), model.__class__.__name__ if isinstance(model, Model) else None, method]
+    permission = [get_service_name(), model.__class__.__name__ if isinstance(model, Model) else None, method.upper()]
     return ':'.join([part for part in permission if part is not None])
 
 

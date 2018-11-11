@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, BooleanField, ValidationError, EmailField
 from rest_framework_jwt.settings import api_settings
 
-from .authorization import is_loggedin, get_user_permissions_string_list, get_user_service_permissions_string_list
+from .authorization import is_loggedin, get_user_permissions_string_list
 from .models import User, IdentityToken, ElevatedToken
 
 
@@ -44,7 +44,7 @@ class UserSerializer(ModelSerializer):
 
     @staticmethod
     def get_service_permissions(instance):
-        return get_user_service_permissions_string_list(instance)
+        return []
 
     def validate_email(self, value):
         if value == self.context['request'].user.email:
@@ -57,11 +57,10 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name', 'identity_token', 'elevated_token', 'jwt_token',
-            'user_permissions', 'service_permissions', 'is_registered', 'accepted_privacy_policy',
+            'user_permissions', 'is_registered', 'accepted_privacy_policy',
             'accepted_terms_of_service')
         read_only_fields = (
-            'id', 'username', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'user_permissions',
-            'service_permissions')
+            'id', 'username', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'user_permissions')
 
 
 class AuthenticatedUserSerializer(UserSerializer):
@@ -78,11 +77,11 @@ class AuthorizedUserSerializer(UserSerializer):
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name', 'identity_token', 'elevated_token', 'jwt_token',
-            'user_permissions', 'service_permissions', 'is_registered', 'accepted_privacy_policy',
+            'user_permissions', 'is_registered', 'accepted_privacy_policy',
             'accepted_terms_of_service')
         read_only_fields = (
             'id', 'username', 'identity_token', 'elevated_token', 'jwt_token', 'is_registered', 'username',
-            'first_name', 'last_name', 'user_permissions', 'service_permissions')
+            'first_name', 'last_name', 'user_permissions')
 
 
 class CreateUserSerializer(UserSerializer):

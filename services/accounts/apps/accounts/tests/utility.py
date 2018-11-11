@@ -6,8 +6,6 @@ from rest_framework.test import APITestCase
 from rest_framework_jwt.settings import api_settings
 
 from ..models import IdentityToken, ElevatedToken, User
-from ...services.models import Service, ServicePermission
-
 
 class AccountsTestBase(APITestCase):
     def get_tested_user(self):

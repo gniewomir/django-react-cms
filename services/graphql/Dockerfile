@@ -6,9 +6,11 @@ ARG name
 ENV SERVICE=$name
 ENV ENVIRONMENT=$environment
 ENV SOURCE=./services/$SERVICE
+ENV DESTINATION=/dist
 
-COPY $SOURCE/package*.json /build/
-WORKDIR /build
+WORKDIR $DESTINATION
+COPY ./shared/node/ $DESTINATION/lib
+COPY $SOURCE/package*.json $DESTINATION/
 RUN npm ci
 COPY $SOURCE/src/ ./src
 COPY $SOURCE/.env \
@@ -16,10 +18,4 @@ COPY $SOURCE/.env \
      $SOURCE/index.js \
      ./
 
-FROM node:10.10.0
-
-ENV DESTINATION=./dist
-
-WORKDIR $DESTINATION
-COPY --from=builder ./build/ .
 ENTRYPOINT ["bash", "/dist/docker-entrypoint.sh"]

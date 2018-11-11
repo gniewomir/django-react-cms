@@ -1,30 +1,14 @@
 import os
-import sys
+
+from lib.logging.settings import LOGGING
+
+LOGGING = LOGGING
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = os.getenv('DEBUG', 'false')
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': os.environ['LOG_LEVEL'],
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.environ['LOG_LEVEL'],
-            'propagate': True,
-        },
-    },
-}
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,7 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'apps.accounts',
-    'apps.services',
 ]
 
 MIDDLEWARE = [
