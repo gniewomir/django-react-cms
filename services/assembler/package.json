@@ -19,7 +19,7 @@
     "graphql-tag": "^2.10.0",
     "helmet": "^3.14.0",
     "morgan": "^1.9.1",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.1",
     "razzle": "^2.4.0",
     "react": "^16.6.0",
     "react-apollo": "^2.2.4",
